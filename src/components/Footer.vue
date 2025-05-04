@@ -1,3 +1,4 @@
+@import primeicons from 'primeicons/primeicons.css';
 <template>
   <footer class="footer">
     <div class="footer-container">
@@ -16,11 +17,12 @@
       
       <div class="footer-section">
         <h4 class="footer-subtitle">Contact Us</h4>
+
         <p class="footer-text">
-          <i class="fas fa-envelope"></i> info@tailwindcars.com
+          <i class="pi pi-envelope"></i> s094812@student.tu.kielce.pl
         </p>
         <p class="footer-text">
-          <i class="fas fa-phone"></i> +48 123 456 789
+          <i class="pi pi-phone"></i> +48 511 421 841
         </p>
       </div>
     </div>

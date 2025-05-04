@@ -4,6 +4,7 @@ import CarsView from '../views/CarsView.vue'
 import NotFoundView from '../views/NotFoundView.vue';
 import CarView from '../views/CarView.vue';
 import ClientView from '../views/ClientView.vue';
+import LoginView from '../views/LoginView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,11 @@ const router = createRouter({
             name: 'client',
             component: ClientView
 
+        },
+        { 
+            path: '/login',
+            name: 'login',
+            component: LoginView
         }
     ],
 });

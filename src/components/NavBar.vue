@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import logo from '../assets/logo3.png';
 
@@ -15,9 +15,40 @@ const toggleMenu = () => {
 
 // Authentication state (mock)
 const isLoggedIn = ref(false);
+const userData = ref(null);
 
 const toggleLogin = () => {
   isLoggedIn.value = !isLoggedIn.value;
+};
+
+
+// Initialize authentication state from localStorage
+onMounted(() => {
+  const storedLoginState = localStorage.getItem('isLoggedIn');
+  if (storedLoginState === 'true') {
+    isLoggedIn.value = true;
+    const storedUserData = localStorage.getItem('user');
+    if (storedUserData) {
+      userData.value = JSON.parse(storedUserData);
+    }
+  }
+  
+  // Listen for login events from other components
+  window.addEventListener('user-login', (event) => {
+    isLoggedIn.value = true;
+    userData.value = event.detail;
+  });
+});
+
+const logout = () => {
+  // Clear authentication data
+  localStorage.removeItem('isLoggedIn');
+  localStorage.removeItem('user');
+  isLoggedIn.value = false;
+  userData.value = null;
+  
+  // Redirect to home page
+  router.push('/');
 };
 </script>
 
@@ -74,15 +105,20 @@ const toggleLogin = () => {
               Staff Portal
             </RouterLink>
             
-            <!-- Login/Logout Button styled like other navigation items -->
-            <button 
-              @click="toggleLogin" 
-              :class="[
-                isLoggedIn ? 'hover:bg-red-500' : 'hover:bg-green-500', 
-                'text-white rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow'
-              ]"
+             <!-- Login/Logout Button -->
+             <RouterLink
+              v-if="!isLoggedIn"
+              to="/login"
+              class="text-white hover:bg-green-500 rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow"
             >
-              {{ isLoggedIn ? 'Logout' : 'Login' }}
+              Login
+            </RouterLink>
+            <button 
+              v-else
+              @click="logout" 
+              class="text-white hover:bg-red-500 rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow"
+            >
+              Logout
             </button>
           </div>
         </div>
@@ -145,14 +181,20 @@ const toggleLogin = () => {
         </RouterLink>
         
         <!-- Mobile Login/Logout Button -->
-        <button 
-          @click="toggleLogin" 
-          :class="[
-            isLoggedIn ? 'hover:bg-red-500' : 'hover:bg-green-500', 
-            'block w-full text-white rounded-md px-3 py-2 text-base font-medium transition-colors'
-          ]"
+        <RouterLink
+          v-if="!isLoggedIn"
+          to="/login"
+          @click="toggleMenu"
+          class="block w-full text-white hover:bg-green-500 rounded-md px-3 py-2 text-base font-medium transition-colors"
         >
-          {{ isLoggedIn ? 'Logout' : 'Login' }}
+          Login
+        </RouterLink>
+        <button 
+          v-else
+          @click="logout" 
+          class="block w-full text-white hover:bg-red-500 rounded-md px-3 py-2 text-base font-medium transition-colors"
+        >
+          Logout
         </button>
       </div>
     </div>

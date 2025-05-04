@@ -3,99 +3,269 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
+import { computed } from 'vue'
 import BackButton from '../components/BackButton.vue'
+import def from '../assets/holder.jpg';
 
 const route = useRoute();
-const jobId = route.params.id;
-const job = ref({});
+const vehicleId = route.params.id;
+const vehicle = ref({});
+const loading = ref(true);
+const error = ref(null);
+const isReservationFormOpen = ref(false);
 
-onMounted( async () => {
-    try {
-        const response = await axios.get(`/api/jobs/${jobId}`);
-        job.value = response.data;
-    } catch (error) {
-        console.error("Error fetching jobs:", error);
-    }
+// Form data for reservation
+const reservationData = ref({
+  startDate: '',
+  endDate: ''
+});
+
+// Status badge color
+const statusColor = computed(() => {
+  if (!vehicle.value || !vehicle.value.status) return 'bg-gray-100 text-gray-800';
+  
+  switch(vehicle.value.status) {
+    case 'Available':
+      return 'bg-green-100 text-green-800';
+    case 'Reserved':
+      return 'bg-blue-100 text-blue-800';
+    case 'Rented':
+      return 'bg-purple-100 text-purple-800';
+    case 'Under Maintenance':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+});
+
+// Format price - this would be replaced with actual price data
+const formatPrice = (year) => {
+  if (!year) return '0.00';
+  // Placeholder calculation based on vehicle age
+  const basePrice = 200;
+  const currentYear = new Date().getFullYear();
+  const age = currentYear - year;
+  return (basePrice - (age * 2)).toFixed(2);
+};
+
+const dailyPrice = computed(() => {
+  return formatPrice(vehicle.value.productionYear);
+});
+
+const toggleReservationForm = () => {
+  isReservationFormOpen.value = !isReservationFormOpen.value;
+};
+
+const handleReservation = () => {
+  // Here would be the code to submit the reservation to the backend
+  alert('Reservation submitted successfully!');
+  isReservationFormOpen.value = false;
+};
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`/api/vehicles/${vehicleId}`);
+    vehicle.value = response.data;
+    loading.value = false;
+  } catch (err) {
+    error.value = "Failed to load vehicle details. Please try again later.";
+    loading.value = false;
+    console.error("Error fetching vehicle:", err);
+  }
 });
 </script>
 
 <template>
-    <BackButton />
-        <section class="bg-green-50">
-      <div class="container m-auto py-10 px-6">
-        <div class="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
-          <main>
-            <div
-              class="bg-white p-6 rounded-lg shadow-md text-center md:text-left"
-            >
-              <div class="text-gray-500 mb-4"> {{  job.type }}</div>
-              <h1 class="text-3xl font-bold mb-4">{{ job.title}}</h1>
-              <div
-                class="text-gray-500 mb-4 flex align-middle justify-center md:justify-start"
-              >
-                <i
-                  class="pi pi-map-marker text-red-700 mr-2"
-                ></i>
-                <p class="text-orange-700">{{ job.location }}</p>
+  <section class="bg-blue-50">
+    <div class="container mx-auto py-10 px-6">
+      <BackButton />
+
+      <!-- Loading and Error States -->
+      <div v-if="loading" class="text-center py-10">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <p class="mt-2">Loading vehicle details...</p>
+      </div>
+
+      <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+        {{ error }}
+      </div>
+
+      <!-- Vehicle Details -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Vehicle Image and Basic Info -->
+        <div class="md:col-span-2">
+          <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <!-- Vehicle Image -->
+            <div class="h-64 w-full overflow-hidden bg-gray-200">
+              <img 
+                :src="vehicle.imageUrl || def" 
+                :alt="vehicle.make + ' ' + vehicle.model"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            
+            <!-- Vehicle Details -->
+            <div class="p-6">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <h1 class="text-3xl font-bold text-gray-800">{{ vehicle.make }} {{ vehicle.model }}</h1>
+                  <p class="text-gray-600">{{ vehicle.productionYear }} • {{ vehicle.vehicleType }}</p>
+                </div>
+                <span :class="[statusColor, 'px-3 py-1 text-sm font-semibold rounded-full']">
+                  {{ vehicle.status }}
+                </span>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                    <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
+                  </svg>
+                  <span class="text-gray-700">License Plate: {{ vehicle.licensePlate }}</span>
+                </div>
+                <div class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-gray-700">Mileage: {{ vehicle.mileage?.toLocaleString() || 0 }} km</span>
+                </div>
+                <div class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-gray-700">Condition: {{ vehicle.technicalCondition }}</span>
+                </div>
+                <div class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v-1l1-1 1-1-0.257-0.257A6 6 0 1118 8zm-6-4a1 1 0 10-2 0v1a1 1 0 102 0V4z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-gray-700">Vehicle ID: {{ vehicle.uniqueIdentifier }}</span>
+                </div>
+              </div>
+              
+              <div class="border-t border-gray-200 pt-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Vehicle Description</h2>
+                <p class="text-gray-600">
+                  Experience the luxury and performance of the {{ vehicle.productionYear }} {{ vehicle.make }} {{ vehicle.model }}. 
+                  This {{ vehicle.vehicleType }} offers exceptional comfort and reliability for your journey. 
+                  With its excellent technical condition and carefully maintained history, this vehicle ensures a smooth and enjoyable ride.
+                </p>
               </div>
             </div>
-
-            <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-              <h3 class="text-green-800 text-lg font-bold mb-6">
-                Job Description
-              </h3>
-
-              <p class="mb-4">
-                {{ job.description }}
-              </p>
-
-              <h3 class="text-green-800 text-lg font-bold mb-2">Salary</h3>
-
-              <p class="mb-4">{{ job.salary }} / Year</p>
+          </div>
+        </div>
+        
+        <!-- Sidebar - Pricing and Reservation -->
+        <div>
+          <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Rental Information</h2>
+            
+            <div class="mb-6">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-gray-600">Daily Rate:</span>
+                <span class="text-xl font-bold text-indigo-600">{{ dailyPrice }} PLN</span>
+              </div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-gray-600">Weekly Rate:</span>
+                <span class="text-lg font-semibold text-indigo-600">{{ (dailyPrice * 6.5).toFixed(2) }} PLN</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600">Monthly Rate:</span>
+                <span class="text-lg font-semibold text-indigo-600">{{ (dailyPrice * 25).toFixed(2) }} PLN</span>
+              </div>
             </div>
-          </main>
-
-          <!-- Sidebar -->
-          <aside>
-            <!-- Company Info -->
-            <div v-if="job.company" class="bg-white p-6 rounded-lg shadow-md">
-              <h3 class="text-xl font-bold mb-6">Company Info</h3>
-
-              <h2 class="text-2xl">{{job.company.name}}</h2>
-
-              <p class="my-2">
-                {{job.company.description}}
-              </p>
-
-              <hr class="my-4" />
-
-              <h3 class="text-xl">Contact Email:</h3>
-
-              <p class="my-2 bg-green-100 p-2 font-bold">
-                {{job.company.contactEmail}}
-              </p>
-
-              <h3 class="text-xl">Contact Phone:</h3>
-
-              <p class="my-2 bg-green-100 p-2 font-bold">{{job.company.contactPhone}}</p>
+            
+            <div class="border-t border-gray-200 py-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-3">Features</h3>
+              <ul class="space-y-2">
+                <li class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-gray-600">Air Conditioning</span>
+                </li>
+                <li class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-gray-600">Bluetooth Connectivity</span>
+                </li>
+                <li class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-gray-600">GPS Navigation</span>
+                </li>
+                <li class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-gray-600">USB Ports</span>
+                </li>
+              </ul>
             </div>
-
-            <!-- Manage -->
-            <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-              <h3 class="text-xl font-bold mb-6">Manage Job</h3>
-              <RouterLink
-                :to="`/jobs/edit/${job.id}`"
-                class="bg-green-500 hover:bg-green-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-                >Edit Job</RouterLink
+            
+            <div class="mt-6">
+              <button 
+                v-if="vehicle.status === 'Available'" 
+                @click="toggleReservationForm" 
+                class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-300"
               >
-              <button
-                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-              >
-                Delete Job
+                {{ isReservationFormOpen ? 'Close Form' : 'Reserve Now' }}
               </button>
+              <div v-else class="bg-gray-100 text-center py-3 px-4 rounded-lg text-gray-700">
+                This vehicle is currently {{ vehicle.status.toLowerCase() }}
+              </div>
             </div>
-          </aside>
+          </div>
         </div>
       </div>
-    </section>
+      
+      <!-- Reservation Form -->
+      <div v-if="isReservationFormOpen" class="mt-8 bg-white rounded-lg shadow-md p-6 transition-all duration-300 ease-in-out">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Reserve {{ vehicle.make }} {{ vehicle.model }}</h2>
+        
+        <form @submit.prevent="handleReservation" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="startDate" class="block text-sm font-medium text-gray-700 mb-1">Pickup Date</label>
+            <input 
+              type="date" 
+              id="startDate" 
+              v-model="reservationData.startDate" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+            />
+          </div>
+          
+          <div>
+            <label for="endDate" class="block text-sm font-medium text-gray-700 mb-1">Return Date</label>
+            <input 
+              type="date" 
+              id="endDate" 
+              v-model="reservationData.endDate" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+            />
+          </div>
+
+          <div class="md:col-span-2 flex justify-end space-x-4">
+            <button 
+              type="button" 
+              @click="toggleReservationForm"
+              class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors duration-300"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-300"
+            >
+              Submit Reservation
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
 </template>

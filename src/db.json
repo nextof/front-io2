@@ -1,0 +1,305 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "make": "Toyota",
+      "model": "Corolla",
+      "productionYear": 2022,
+      "licensePlate": "ABC123",
+      "vehicleType": "Sedan",
+      "mileage": 12500,
+      "technicalCondition": "Excellent",
+      "status": "Available",
+      "uniqueIdentifier": "VEH-001",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Toyota_Corolla_Limousine_Hybrid_Genf_2019_1Y7A5576.jpg",
+      "description": "Efficient and reliable compact sedan with excellent fuel economy. Features include automatic transmission, climate control, backup camera, and smartphone connectivity. Perfect for city driving and short trips. Regularly maintained with recent service."
+    },
+    {
+      "id": 2,
+      "make": "Honda",
+      "model": "Civic",
+      "productionYear": 2021,
+      "licensePlate": "XYZ789",
+      "vehicleType": "Sedan",
+      "mileage": 18000,
+      "technicalCondition": "Good",
+      "status": "Available",
+      "uniqueIdentifier": "VEH-002",
+      "imageUrl": "",
+      "description": "Stylish sedan with sporty handling and modern design. Equipped with touch-screen infotainment system, adaptive cruise control, and lane-keeping assist. Spacious interior with ample trunk space. Ideal for both daily commuting and longer journeys."
+    },
+    {
+      "id": 3,
+      "make": "Ford",
+      "model": "Explorer",
+      "productionYear": 2023,
+      "licensePlate": "DEF456",
+      "vehicleType": "SUV",
+      "mileage": 8000,
+      "technicalCondition": "Excellent",
+      "status": "Available",
+      "uniqueIdentifier": "VEH-003",
+      "imageUrl": "",
+      "description": "Spacious and powerful 7-seater SUV perfect for family trips and outdoor adventures. Features include third-row seating, advanced 4WD system, panoramic sunroof, and premium sound system. High ground clearance makes it suitable for light off-road driving."
+    },
+    {
+      "id": 4,
+      "make": "BMW",
+      "model": "X5",
+      "productionYear": 2022,
+      "licensePlate": "GHI789",
+      "vehicleType": "SUV",
+      "mileage": 15000,
+      "technicalCondition": "Excellent",
+      "status": "Under Maintenance",
+      "uniqueIdentifier": "VEH-004",
+      "imageUrl": "",
+      "description": "Luxury SUV combining elegant design with powerful performance. Premium leather interior, advanced driver assistance systems, and state-of-the-art infotainment. All-wheel drive capability with multiple driving modes. Currently undergoing scheduled maintenance and will be available soon."
+    },
+    {
+      "id": 5,
+      "make": "Mercedes-Benz",
+      "model": "E-Class",
+      "productionYear": 2023,
+      "licensePlate": "JKL012",
+      "vehicleType": "Luxury",
+      "mileage": 5000,
+      "technicalCondition": "Excellent",
+      "status": "Reserved",
+      "uniqueIdentifier": "VEH-005",
+      "imageUrl": "",
+      "description": "Executive luxury sedan featuring premium craftsmanship and cutting-edge technology. Equipped with digital cockpit, ambient lighting, and driver assistance package. Exceptional comfort with heated/ventilated seats and air suspension. Perfect for business trips and special occasions."
+    },
+    {
+      "id": 6,
+      "make": "Volkswagen",
+      "model": "Golf",
+      "productionYear": 2023,
+      "licensePlate": "MNO345",
+      "vehicleType": "Hatchback",
+      "mileage": 7500,
+      "technicalCondition": "Excellent",
+      "status": "Available",
+      "uniqueIdentifier": "VEH-006",
+      "imageUrl": "",
+      "description": "Compact and versatile hatchback with German engineering. Features include turbocharged engine, responsive handling, and configurable cargo space. Well-designed interior with intuitive controls and premium materials. Excellent fuel efficiency makes it economical for both city and highway driving."
+    },
+    {
+      "id": 7,
+      "make": "Audi",
+      "model": "Q7",
+      "productionYear": 2022,
+      "licensePlate": "PQR678",
+      "vehicleType": "SUV",
+      "mileage": 14000,
+      "technicalCondition": "Excellent",
+      "status": "Available",
+      "uniqueIdentifier": "VEH-007",
+      "imageUrl": "",
+      "description": "Premium 7-seater SUV with sophisticated design and advanced technology. Quattro all-wheel drive system ensures confident handling in all conditions. Features include virtual cockpit, premium Bang & Olufsen sound system, and adaptive air suspension. Ideal for luxury family transport and executive travel."
+    },
+    {
+      "id": 8,
+      "make": "Hyundai",
+      "model": "Tucson",
+      "productionYear": 2023,
+      "licensePlate": "STU901",
+      "vehicleType": "Crossover",
+      "mileage": 6000,
+      "technicalCondition": "Excellent",
+      "status": "Available",
+      "uniqueIdentifier": "VEH-008",
+      "imageUrl": "",
+      "description": "Modern crossover with distinctive styling and practical features. Comfortable interior with latest generation infotainment system, wireless phone charging, and panoramic sunroof. Equipped with comprehensive driver assistance features and good fuel economy. Perfect balance between compact dimensions and interior space."
+    },
+    {
+      "id": 9,
+      "make": "Tesla",
+      "model": "Model 3",
+      "productionYear": 2023,
+      "licensePlate": "VWX234",
+      "vehicleType": "Electric",
+      "mileage": 4000,
+      "technicalCondition": "Excellent",
+      "status": "Available",
+      "uniqueIdentifier": "VEH-009",
+      "imageUrl": "",
+      "description": "All-electric sedan with impressive range and instant acceleration. Minimalist interior with large central touchscreen controlling most vehicle functions. Features include Autopilot driver assistance, over-the-air updates, and access to Tesla Supercharger network. Zero emissions with low operating costs and high-tech appeal."
+    },
+    {
+      "id": 10,
+      "make": "Porsche",
+      "model": "911",
+      "productionYear": 2022,
+      "licensePlate": "YZA567",
+      "vehicleType": "Sports",
+      "mileage": 8500,
+      "technicalCondition": "Excellent",
+      "status": "Available",
+      "uniqueIdentifier": "VEH-010",
+      "imageUrl": "",
+      "description": "Iconic sports car blending performance, luxury, and daily usability. Features twin-turbocharged flat-six engine, precise handling, and PDK dual-clutch transmission. Premium interior with supportive sports seats, advanced infotainment, and high-quality materials throughout. The definitive choice for driving enthusiasts seeking an unforgettable experience."
+    }
+  ],
+  "clients": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "phone": "+1-555-123-4567",
+      "address": "123 Main St, Anytown, USA",
+      "licenseNumber": "DL12345678",
+      "restrictions": "None"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "phone": "+1-555-987-6543",
+      "address": "456 Oak Ave, Somewhere, USA",
+      "licenseNumber": "DL87654321",
+      "restrictions": "None"
+    },
+    {
+      "id": 3,
+      "name": "Robert Johnson",
+      "email": "robert.johnson@example.com",
+      "phone": "+1-555-246-8101",
+      "address": "789 Pine Rd, Elsewhere, USA",
+      "licenseNumber": "DL24681012",
+      "restrictions": "No luxury vehicles"
+    }
+  ],
+  "employees": [
+    {
+      "id": 1,
+      "name": "Alice Thompson",
+      "surname": "Thompson",
+      "employeeID": "EMP-001",
+      "role": "Customer Service Representative",
+      "contactInfo": "alice.thompson@carrental.com",
+      "shift": "Morning"
+    },
+    {
+      "id": 2,
+      "name": "Bob Wilson",
+      "surname": "Wilson",
+      "employeeID": "EMP-002",
+      "role": "Maintenance Technician",
+      "contactInfo": "bob.wilson@carrental.com",
+      "shift": "Afternoon"
+    },
+    {
+      "id": 3,
+      "name": "Carol Martinez",
+      "surname": "Martinez",
+      "employeeID": "EMP-003",
+      "role": "Manager",
+      "contactInfo": "carol.martinez@carrental.com",
+      "shift": "Morning"
+    },
+    {
+      "id": 4,
+      "name": "David Brown",
+      "surname": "Brown",
+      "employeeID": "EMP-004",
+      "role": "Administrator",
+      "contactInfo": "david.brown@carrental.com",
+      "shift": "Evening"
+    }
+  ],
+  "reservations": [
+    {
+      "id": 1,
+      "reservationID": "RES-001",
+      "clientID": 1,
+      "vehicleID": 5,
+      "startDate": "2025-05-10",
+      "endDate": "2025-05-15",
+      "cost": 500.00,
+      "status": "Active"
+    },
+    {
+      "id": 2,
+      "reservationID": "RES-002",
+      "clientID": 2,
+      "vehicleID": 3,
+      "startDate": "2025-05-20",
+      "endDate": "2025-05-25",
+      "cost": 350.00,
+      "status": "Pending"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "taskId": "TASK-001",
+      "taskType": "Maintenance",
+      "assignedEmployee": 2,
+      "assignedVehicle": 4,
+      "timestamp": "2025-05-02T10:30:00",
+      "description": "Regular oil change and fluid check",
+      "status": "In Progress"
+    },
+    {
+      "id": 2,
+      "taskId": "TASK-002",
+      "taskType": "Inspection",
+      "assignedEmployee": 2,
+      "assignedVehicle": 1,
+      "timestamp": "2025-05-04T14:00:00",
+      "description": "Pre-rental inspection",
+      "status": "Completed"
+    }
+  ],
+  "billings": [
+    {
+      "id": 1,
+      "invoiceID": "INV-001",
+      "reservationID": 1,
+      "amount": 500.00,
+      "paymentStatus": "Paid",
+      "paymentDate": "2025-05-05"
+    }
+  ],
+  "shifts": [
+    {
+      "id": 1,
+      "shiftID": "SHIFT-001",
+      "employeeID": 1,
+      "startTime": "2025-05-04T08:00:00",
+      "endTime": "2025-05-04T16:00:00",
+      "tasks": ["Customer service", "Process rentals"]
+    },
+    {
+      "id": 2,
+      "shiftID": "SHIFT-002",
+      "employeeID": 2,
+      "startTime": "2025-05-04T12:00:00",
+      "endTime": "2025-05-04T20:00:00",
+      "tasks": ["Vehicle maintenance", "Inspection"]
+    }
+  ],
+  "userRoles": [
+    {
+      "id": 1,
+      "role": "Customer Service Representative",
+      "permissions": ["process-rental", "process-return", "assist-reservation"]
+    },
+    {
+      "id": 2,
+      "role": "Maintenance Technician",
+      "permissions": ["update-service-records", "flag-vehicle-maintenance", "view-repair-status"]
+    },
+    {
+      "id": 3,
+      "role": "Manager",
+      "permissions": ["create-task", "assign-tasks", "create-shift", "update-shift", "delete-shift"]
+    },
+    {
+      "id": 4,
+      "role": "Administrator",
+      "permissions": ["manage-roles-permissions", "monitor-data-logs", "setup-employee-accounts"]
+    }
+  ]
+}

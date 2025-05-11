@@ -1,54 +1,88 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import logo from '../assets/logo3.png';
+import { getCurrentUser, logoutUser } from '../services/UserService';
+
+const route = useRoute();
+const router = useRouter();
+const isOpen = ref(false);
+const isLoggedIn = ref(false);
+const userData = ref(null);
 
 const isActiveLink = (routePath) => {
-  const route = useRoute();
   return route.path === routePath;
 };
 
-const isOpen = ref(false);
 const toggleMenu = () => {
   isOpen.value = !isOpen.value;
 };
 
-// Authentication state (mock)
-const isLoggedIn = ref(false);
-const userData = ref(null);
-
-const toggleLogin = () => {
-  isLoggedIn.value = !isLoggedIn.value;
-};
-
-
-// Initialize authentication state from localStorage
-onMounted(() => {
-  const storedLoginState = localStorage.getItem('isLoggedIn');
-  if (storedLoginState === 'true') {
-    isLoggedIn.value = true;
-    const storedUserData = localStorage.getItem('user');
-    if (storedUserData) {
-      userData.value = JSON.parse(storedUserData);
-    }
-  }
-  
-  // Listen for login events from other components
-  window.addEventListener('user-login', (event) => {
-    isLoggedIn.value = true;
-    userData.value = event.detail;
-  });
-});
-
-const logout = () => {
-  // Clear authentication data
-  localStorage.removeItem('isLoggedIn');
-  localStorage.removeItem('user');
+const handleLogout = async () => {
+  await logoutUser();
   isLoggedIn.value = false;
   userData.value = null;
+  router.push('/login');
+};
+
+const navigateToProfile = () => {
+  router.push('/profile');
+};
+
+// Function to update auth state
+const updateAuthState = async () => {
+  const user = await getCurrentUser();
+  if (user) {
+    isLoggedIn.value = true;
+    userData.value = user;
+  } else {
+    isLoggedIn.value = false;
+    userData.value = null;
+  }
+};
+
+// Login event handler
+const handleUserLogin = (event) => {
+  isLoggedIn.value = true;
+  userData.value = event.detail;
+  console.log('Login event received in NavBar:', event.detail);
+};
+
+// Initialize authentication state and add event listeners
+onMounted(async () => {
+  // Initial auth check
+  await updateAuthState();
   
-  // Redirect to home page
-  router.push('/');
+  // Listen for login events
+  window.addEventListener('user-login', handleUserLogin);
+});
+
+// Clean up event listeners when component is unmounted
+onUnmounted(() => {
+  window.removeEventListener('user-login', handleUserLogin);
+});
+
+// Check if user is admin
+const isAdmin = () => {
+  return userData.value?.roles?.includes('ROLE_ADMIN') || false;
+};
+
+// Get random pastel color for user avatar
+const getUserAvatarColor = () => {
+  // Using username to generate a consistent color for each user
+  if (!userData.value || !userData.value.username) return 'bg-indigo-200';
+  
+  const colors = [
+    'bg-blue-200', 'bg-green-200', 'bg-yellow-200', 
+    'bg-purple-200', 'bg-pink-200', 'bg-indigo-200'
+  ];
+  
+  // Simple hash function to select a color based on username
+  const hash = userData.value.username.split('').reduce((acc, char) => {
+    return acc + char.charCodeAt(0);
+  }, 0);
+  
+  return colors[hash % colors.length];
 };
 </script>
 
@@ -66,7 +100,8 @@ const logout = () => {
 
         <!-- Desktop Navigation Menu -->
         <div class="hidden md:flex md:items-center">
-          <div class="flex space-x-4">
+          <!-- Main navigation links -->
+          <div class="flex space-x-6 mr-8">
             <RouterLink
               to="/"
               :class="[
@@ -85,41 +120,63 @@ const logout = () => {
             >
               Our Fleet
             </RouterLink>
-            <RouterLink
-              to="/client"
-              :class="[
-                isActiveLink('/client') ? 'bg-teal-600 text-white' : 'text-white hover:bg-teal-500 hover:text-white', 
-                'rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow'
-              ]"
-            >
-              Client Area
-            </RouterLink>
-            <RouterLink
+          </div>
+          
+          <!-- User-specific links and info -->
+          <div class="flex items-center">
+            <div class="flex space-x-6 mr-4">
+              <RouterLink
               v-if="isLoggedIn"
-              to="/admin"
+              to="/profile"
               :class="[
-                isActiveLink('/admin') ? 'bg-cyan-600 text-white' : 'text-white hover:bg-cyan-500 hover:text-white', 
+                isActiveLink('/profile') || isActiveLink('/client') ? 'bg-teal-600 text-white' : 'text-white hover:bg-teal-500 hover:text-white', 
                 'rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow'
               ]"
             >
-              Staff Portal
+              Profile
             </RouterLink>
+              <RouterLink
+                v-if="isLoggedIn && isAdmin()"
+                to="/admin"
+                :class="[
+                  isActiveLink('/admin') ? 'bg-cyan-600 text-white' : 'text-white hover:bg-cyan-500 hover:text-white', 
+                  'rounded-md px-5 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow'
+                ]"
+              >
+                Staff Portal
+              </RouterLink>
+            </div>
+
+            <!-- User Avatar and Logout -->
+            <div v-if="isLoggedIn && userData" class="flex items-center border-l border-white border-opacity-20 pl-4 ml-4">
+              <!-- Clickable avatar that navigates to profile -->
+              <div 
+                @click="navigateToProfile" 
+                :class="[
+                  getUserAvatarColor(), 
+                  'rounded-full h-8 w-8 flex items-center justify-center font-bold shadow-sm text-gray-700 cursor-pointer hover:shadow-md transition-all duration-300'
+                ]"
+                title="Go to Profile"
+              >
+                {{ userData.username ? userData.username.charAt(0).toUpperCase() : 'U' }}
+              </div>
+              <span class="ml-2 mr-4 text-white text-sm font-medium">{{ userData.username }}</span>
+              <button 
+                @click="handleLogout" 
+                class="bg-red-400 bg-opacity-30 hover:bg-opacity-50 text-white rounded-md px-3 py-2 text-sm font-medium transition-all duration-300"
+              >
+                Logout
+              </button>
+            </div>
             
-             <!-- Login/Logout Button -->
-             <RouterLink
+            <!-- Login Button (when not logged in) -->
+            <RouterLink
               v-if="!isLoggedIn"
               to="/login"
-              class="text-white hover:bg-green-500 rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow"
+              class="bg-green-500 text-white rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow hover:bg-green-600"
             >
               Login
             </RouterLink>
-            <button 
-              v-else
-              @click="logout" 
-              class="text-white hover:bg-red-500 rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow"
-            >
-              Logout
-            </button>
           </div>
         </div>
 
@@ -159,17 +216,18 @@ const logout = () => {
           Our Fleet
         </RouterLink>
         <RouterLink
-          to="/client"
+          v-if="isLoggedIn"
+          to="/profile"
           @click="toggleMenu"
           :class="[
-            isActiveLink('/client') ? 'bg-teal-700 text-white' : 'text-white hover:bg-teal-500',
+            isActiveLink('/profile') || isActiveLink('/client') ? 'bg-teal-700 text-white' : 'text-white hover:bg-teal-500',
             'block rounded-md px-3 py-2 text-base font-medium transition-colors'
           ]"
         >
-          Client Area
+          Profile
         </RouterLink>
         <RouterLink
-          v-if="isLoggedIn"
+          v-if="isLoggedIn && isAdmin()"
           to="/admin"
           @click="toggleMenu"
           :class="[
@@ -180,22 +238,41 @@ const logout = () => {
           Staff Portal
         </RouterLink>
         
-        <!-- Mobile Login/Logout Button -->
+        <!-- User Info & Logout (Mobile) -->
+        <div v-if="isLoggedIn && userData" class="mt-4 border-t border-blue-400 pt-3">
+          <div class="flex items-center justify-between px-3 py-2">
+            <div class="flex items-center">
+              <!-- Clickable avatar for mobile -->
+              <div 
+                @click="() => { navigateToProfile(); toggleMenu(); }" 
+                :class="[
+                  getUserAvatarColor(), 
+                  'rounded-full h-7 w-7 flex items-center justify-center font-bold mr-2 text-gray-700 cursor-pointer'
+                ]"
+                title="Go to Profile"
+              >
+                {{ userData.username ? userData.username.charAt(0).toUpperCase() : 'U' }}
+              </div>
+              <div class="text-white font-medium">{{ userData.username }}</div>
+            </div>
+            <button 
+              @click="() => { handleLogout(); toggleMenu(); }" 
+              class="bg-red-400 bg-opacity-30 hover:bg-opacity-50 text-white rounded-md px-3 py-1 text-sm font-medium transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+        
+        <!-- Mobile Login Button -->
         <RouterLink
           v-if="!isLoggedIn"
           to="/login"
           @click="toggleMenu"
-          class="block w-full text-white hover:bg-green-500 rounded-md px-3 py-2 text-base font-medium transition-colors"
+          class="block w-full text-center text-white bg-green-600 hover:bg-green-700 rounded-md px-3 py-2 text-base font-medium transition-colors mt-3"
         >
           Login
         </RouterLink>
-        <button 
-          v-else
-          @click="logout" 
-          class="block w-full text-white hover:bg-red-500 rounded-md px-3 py-2 text-base font-medium transition-colors"
-        >
-          Logout
-        </button>
       </div>
     </div>
   </nav>

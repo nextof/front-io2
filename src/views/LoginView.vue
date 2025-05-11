@@ -1,32 +1,3 @@
-<!-- views/LoginView.vue -->
-<script setup>
-import { ref } from 'vue';
-import LoginForm from '../components/LoginForm.vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-const loginStatus = ref('');
-
-const handleLoginSuccess = (userData) => {
-  loginStatus.value = 'success';
-  // You would normally update your global state here
-  // We'll use localStorage for now
-  
-  // Simulate event emission to update navbar
-  window.dispatchEvent(new CustomEvent('user-login', { detail: userData }));
-  
-  // Redirect after a short delay to show the success message
-  setTimeout(() => {
-    router.push('/');
-  }, 1000);
-};
-
-const handleLoginFailure = (error) => {
-  loginStatus.value = 'failure';
-  // Additional failure handling if needed
-};
-</script>
-
 <template>
   <section class="bg-gray-50 py-12">
     <div class="container mx-auto px-4">
@@ -42,3 +13,29 @@ const handleLoginFailure = (error) => {
     </div>
   </section>
 </template>
+
+<script>
+import LoginForm from '../components/LoginForm.vue';
+
+export default {
+  name: 'LoginView',
+  components: {
+    LoginForm
+  },
+  data() {
+    return {
+      loginStatus: ''
+    }
+  },
+  methods: {
+    handleLoginSuccess(userData) {
+      this.loginStatus = 'success';
+      // Additional success handling if needed
+    },
+    handleLoginFailure(error) {
+      this.loginStatus = 'failure';
+      // Additional failure handling if needed
+    }
+  }
+}
+</script>

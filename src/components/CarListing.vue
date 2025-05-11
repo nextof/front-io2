@@ -26,13 +26,10 @@ const statusColor = computed(() => {
   }
 });
 
-// Format price - this would be replaced with actual price data
-const formatPrice = (year) => {
-  // This is just a placeholder calculation based on vehicle age
-  const basePrice = 200;
-  const currentYear = new Date().getFullYear();
-  const age = currentYear - year;
-  return (basePrice - (age * 2)).toFixed(2);
+// Format currency
+const formatCurrency = (amount) => {
+  if (!amount) return '0.00';
+  return parseFloat(amount).toFixed(2);
 };
 
 // Add a hover state
@@ -77,21 +74,21 @@ const isHovered = ref(false);
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <span>{{ vehicle.technicalCondition }} Condition</span>
+          <span>{{ vehicle.engineType }}</span>
         </div>
         
         <div class="flex items-center text-sm text-gray-600">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>{{ vehicle.mileage.toLocaleString() }} km</span>
+          <span>{{ vehicle.mileage?.toLocaleString() || 0 }} km</span>
         </div>
       </div>
       
       <!-- Price and CTA -->
       <div class="flex items-center justify-between mt-6">
         <div class="text-lg font-bold text-indigo-600">
-          {{ formatPrice(vehicle.productionYear) }}<span class="text-sm font-normal">  PLN/day</span>
+          {{ formatCurrency(vehicle.dailyRate) }}<span class="text-sm font-normal"> PLN/day</span>
         </div>
         
         <RouterLink

@@ -1,11 +1,11 @@
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
 import { onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { computed } from 'vue'
 import BackButton from '../components/BackButton.vue'
 import def from '../assets/holder.jpg';
+import VehicleService from '../services/VehicleService';
 
 const route = useRoute();
 const vehicleId = route.params.id;
@@ -17,7 +17,10 @@ const isReservationFormOpen = ref(false);
 // Form data for reservation
 const reservationData = ref({
   startDate: '',
-  endDate: ''
+  endDate: '',
+  clientName: '',
+  clientEmail: '',
+  clientPhone: ''
 });
 
 // Status badge color
@@ -38,19 +41,11 @@ const statusColor = computed(() => {
   }
 });
 
-// Format price - this would be replaced with actual price data
-const formatPrice = (year) => {
-  if (!year) return '0.00';
-  // Placeholder calculation based on vehicle age
-  const basePrice = 200;
-  const currentYear = new Date().getFullYear();
-  const age = currentYear - year;
-  return (basePrice - (age * 2)).toFixed(2);
+// Format currency
+const formatCurrency = (amount) => {
+  if (!amount) return '0.00';
+  return parseFloat(amount).toFixed(2);
 };
-
-const dailyPrice = computed(() => {
-  return formatPrice(vehicle.value.productionYear);
-});
 
 const toggleReservationForm = () => {
   isReservationFormOpen.value = !isReservationFormOpen.value;
@@ -64,7 +59,7 @@ const handleReservation = () => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/vehicles/${vehicleId}`);
+    const response = await VehicleService.getVehicleById(vehicleId);
     vehicle.value = response.data;
     loading.value = false;
   } catch (err) {
@@ -134,22 +129,20 @@ onMounted(async () => {
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                   </svg>
-                  <span class="text-gray-700">Condition: {{ vehicle.technicalCondition }}</span>
+                  <span class="text-gray-700">Engine Type: {{ vehicle.engineType }}</span>
                 </div>
                 <div class="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v-1l1-1 1-1-0.257-0.257A6 6 0 1118 8zm-6-4a1 1 0 10-2 0v1a1 1 0 102 0V4z" clip-rule="evenodd" />
                   </svg>
-                  <span class="text-gray-700">Vehicle ID: {{ vehicle.uniqueIdentifier }}</span>
+                  <span class="text-gray-700">Vehicle Type: {{ vehicle.vehicleType }}</span>
                 </div>
               </div>
               
               <div class="border-t border-gray-200 pt-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-3">Vehicle Description</h2>
                 <p class="text-gray-600">
-                  Experience the luxury and performance of the {{ vehicle.productionYear }} {{ vehicle.make }} {{ vehicle.model }}. 
-                  This {{ vehicle.vehicleType }} offers exceptional comfort and reliability for your journey. 
-                  With its excellent technical condition and carefully maintained history, this vehicle ensures a smooth and enjoyable ride.
+                  {{ vehicle.description }}
                 </p>
               </div>
             </div>
@@ -164,46 +157,29 @@ onMounted(async () => {
             <div class="mb-6">
               <div class="flex justify-between items-center mb-2">
                 <span class="text-gray-600">Daily Rate:</span>
-                <span class="text-xl font-bold text-indigo-600">{{ dailyPrice }} PLN</span>
+                <span class="text-xl font-bold text-indigo-600">{{ formatCurrency(vehicle.dailyRate) }} PLN</span>
               </div>
               <div class="flex justify-between items-center mb-2">
                 <span class="text-gray-600">Weekly Rate:</span>
-                <span class="text-lg font-semibold text-indigo-600">{{ (dailyPrice * 6.5).toFixed(2) }} PLN</span>
+                <span class="text-lg font-semibold text-indigo-600">{{ formatCurrency(vehicle.weeklyRate) }} PLN</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Monthly Rate:</span>
-                <span class="text-lg font-semibold text-indigo-600">{{ (dailyPrice * 25).toFixed(2) }} PLN</span>
+                <span class="text-lg font-semibold text-indigo-600">{{ formatCurrency(vehicle.monthlyRate) }} PLN</span>
               </div>
             </div>
             
             <div class="border-t border-gray-200 py-4">
               <h3 class="text-lg font-semibold text-gray-800 mb-3">Features</h3>
-              <ul class="space-y-2">
-                <li class="flex items-center">
+              <ul v-if="vehicle.features && vehicle.features.length > 0" class="space-y-2">
+                <li v-for="(feature, index) in vehicle.features" :key="index" class="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                   </svg>
-                  <span class="text-gray-600">Air Conditioning</span>
-                </li>
-                <li class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-600">Bluetooth Connectivity</span>
-                </li>
-                <li class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-600">GPS Navigation</span>
-                </li>
-                <li class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-600">USB Ports</span>
+                  <span class="text-gray-600">{{ feature }}</span>
                 </li>
               </ul>
+              <p v-else class="text-gray-500 italic">No features listed for this vehicle.</p>
             </div>
             
             <div class="mt-6">
@@ -248,7 +224,40 @@ onMounted(async () => {
               required
             />
           </div>
-
+          
+          <div>
+            <label for="clientName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <input 
+              type="text" 
+              id="clientName" 
+              v-model="reservationData.clientName" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+            />
+          </div>
+          
+          <div>
+            <label for="clientEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <input 
+              type="email" 
+              id="clientEmail" 
+              v-model="reservationData.clientEmail" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+            />
+          </div>
+          
+          <div class="md:col-span-2">
+            <label for="clientPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <input 
+              type="tel" 
+              id="clientPhone" 
+              v-model="reservationData.clientPhone" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+            />
+          </div>
+          
           <div class="md:col-span-2 flex justify-end space-x-4">
             <button 
               type="button" 

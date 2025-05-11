@@ -45,7 +45,10 @@ const isHovered = ref(false);
     @mouseleave="isHovered = false"
   >
     <!-- Vehicle Image -->
+     <RouterLink
+          :to="`/vehicles/${vehicle.id}`">
     <div class="h-48 w-full overflow-hidden">
+      
       <img 
         :src="vehicle.image_url || def" 
         :alt="vehicle.make + ' ' + vehicle.model"
@@ -54,7 +57,7 @@ const isHovered = ref(false);
         :class="{ 'scale-110': isHovered }"
       />
     </div>
-    
+  </RouterLink>
     <div class="p-6">
       <!-- Status Badge -->
       <div class="mb-2">

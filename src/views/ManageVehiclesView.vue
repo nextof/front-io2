@@ -41,17 +41,84 @@
           <table class="min-w-full bg-white">
             <thead class="bg-gray-100">
               <tr>
-                <th class="py-3 px-4 text-left">ID</th>
-                <th class="py-3 px-4 text-left">Make & Model</th>
-                <th class="py-3 px-4 text-left">License Plate</th>
-                <th class="py-3 px-4 text-left">Status</th>
+                <th 
+                  @click="toggleSort('id')" 
+                  class="py-3 px-4 text-left cursor-pointer hover:bg-gray-200"
+                >
+                  <div class="flex items-center">
+                    ID
+                    <span v-if="sortField === 'id'" class="ml-1">
+                      <svg v-if="sortDirection === 'asc'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                      </svg>
+                      <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </span>
+                  </div>
+                </th>
+                <th 
+                  @click="toggleSort('make')" 
+                  class="py-3 px-4 text-left cursor-pointer hover:bg-gray-200"
+                >
+                  <div class="flex items-center">
+                    Make & Model
+                    <span v-if="sortField === 'make'" class="ml-1">
+                      <svg v-if="sortDirection === 'asc'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                      </svg>
+                      <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </span>
+                  </div>
+                </th>
+                <th 
+                  @click="toggleSort('license_plate')" 
+                  class="py-3 px-4 text-left cursor-pointer hover:bg-gray-200"
+                >
+                  <div class="flex items-center">
+                    License Plate
+                    <span v-if="sortField === 'license_plate'" class="ml-1">
+                      <svg v-if="sortDirection === 'asc'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                      </svg>
+                      <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </span>
+                  </div>
+                </th>
+                <th 
+                  @click="toggleSort('status')" 
+                  class="py-3 px-4 text-left cursor-pointer hover:bg-gray-200"
+                >
+                  <div class="flex items-center">
+                    Status
+                    <span v-if="sortField === 'status'" class="ml-1">
+                      <svg v-if="sortDirection === 'asc'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                      </svg>
+                      <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </span>
+                  </div>
+                </th>
                 <th class="py-3 px-4 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="vehicle in filteredVehicles" :key="vehicle.id" class="border-t hover:bg-gray-50">
                 <td class="py-3 px-4">{{ vehicle.id }}</td>
-                <td class="py-3 px-4">{{ vehicle.make }} {{ vehicle.model }}</td>
+                <td class="py-3 px-4">
+                  <RouterLink 
+                    :to="`/vehicles/${vehicle.id}`" 
+                    class="text-blue-600 hover:text-blue-800 hover:underline"
+                  >
+                    {{ vehicle.make }} {{ vehicle.model }}
+                  </RouterLink>
+                </td>
                 <td class="py-3 px-4">{{ vehicle.license_plate }}</td>
                 <td class="py-3 px-4">
                   <span
@@ -67,14 +134,27 @@
                   </span>
                 </td>
                 <td class="py-3 px-4">
-                  <button
-                    class="text-blue-600 hover:text-blue-800"
-                    title="Edit"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                  </button>
+                  <div class="flex space-x-2">
+                    <button
+                      @click="openEditVehicleModal(vehicle)"
+                      class="text-blue-600 hover:text-blue-800"
+                      title="Edit"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                    </button>
+                    <RouterLink
+                      :to="`/vehicles/${vehicle.id}`"
+                      class="text-green-600 hover:text-green-800"
+                      title="View Details"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                      </svg>
+                    </RouterLink>
+                  </div>
                 </td>
               </tr>
               <!-- Empty state -->
@@ -90,12 +170,12 @@
     </div>
   </div>
 
-  <!-- Add Vehicle Modal -->
+  <!-- Vehicle Modal (Add/Edit) -->
   <div v-if="showVehicleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
       <div class="p-6">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800">Add New Vehicle</h3>
+          <h3 class="text-xl font-bold text-gray-800">{{ isEditMode ? 'Edit Vehicle' : 'Add New Vehicle' }}</h3>
           <button @click="closeVehicleModal" class="text-gray-500 hover:text-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -335,7 +415,7 @@
               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               :disabled="isSaving"
             >
-              {{ isSaving ? 'Saving...' : 'Save Vehicle' }}
+              {{ isSaving ? 'Saving...' : (isEditMode ? 'Update Vehicle' : 'Save Vehicle') }}
             </button>
           </div>
         </form>
@@ -389,9 +469,11 @@ export default {
     const searchQuery = ref('');
     const showVehicleModal = ref(false);
     const isSaving = ref(false);
+    const isEditMode = ref(false);
 
-// Vehicle form
-const vehicleForm = ref({
+    // Vehicle form
+    const vehicleForm = ref({
+      id: null,
       make: '',
       model: '',
       production_year: new Date().getFullYear(),
@@ -408,24 +490,61 @@ const vehicleForm = ref({
       features: ['GPS', 'Bluetooth']
     });
 
-    // Filtered vehicles
+    // Sorting
+    const sortField = ref('id');
+    const sortDirection = ref('asc');
+    
+    // Toggle sort on column
+    const toggleSort = (field) => {
+      if (sortField.value === field) {
+        // If already sorting by this field, toggle direction
+        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+      } else {
+        // New field, default to ascending
+        sortField.value = field;
+        sortDirection.value = 'asc';
+      }
+    };
+    
+    // Filtered and sorted vehicles
     const filteredVehicles = computed(() => {
-      if (searchQuery.value.trim() === '') {
-        return vehicles.value;
+      // First apply search filtering
+      let result = vehicles.value;
+      
+      if (searchQuery.value.trim() !== '') {
+        const query = searchQuery.value.toLowerCase();
+        result = result.filter(vehicle => {
+          return (
+            vehicle.make?.toLowerCase().includes(query) ||
+            vehicle.model?.toLowerCase().includes(query) ||
+            vehicle.license_plate?.toLowerCase().includes(query) ||
+            vehicle.vehicle_type?.toLowerCase().includes(query)
+          );
+        });
       }
       
-      const query = searchQuery.value.toLowerCase();
-      return vehicles.value.filter(vehicle => {
-        return (
-          vehicle.make?.toLowerCase().includes(query) ||
-          vehicle.model?.toLowerCase().includes(query) ||
-          vehicle.license_plate?.toLowerCase().includes(query) ||
-          vehicle.vehicle_type?.toLowerCase().includes(query)
-        );
+      // Then apply sorting
+      return [...result].sort((a, b) => {
+        const aValue = a[sortField.value];
+        const bValue = b[sortField.value];
+        
+        // Handle null or undefined values
+        if (aValue == null) return sortDirection.value === 'asc' ? -1 : 1;
+        if (bValue == null) return sortDirection.value === 'asc' ? 1 : -1;
+        
+        // Compare based on data type
+        if (typeof aValue === 'string') {
+          const comparison = aValue.localeCompare(bValue);
+          return sortDirection.value === 'asc' ? comparison : -comparison;
+        } else {
+          const comparison = aValue - bValue;
+          return sortDirection.value === 'asc' ? comparison : -comparison;
+        }
       });
     });
-// Fetch vehicles
-const fetchVehicles = async () => {
+
+    // Fetch vehicles
+    const fetchVehicles = async () => {
       loading.value = true;
       error.value = null;
 
@@ -440,33 +559,57 @@ const fetchVehicles = async () => {
         loading.value = false;
       }
     };
-// Open modal to add new vehicle
-const openAddVehicleModal = () => {
-      vehicleForm.value = {
-        make: '',
-        model: '',
-        production_year: new Date().getFullYear(),
-        license_plate: '',
-        status: 'Available',
-        image_url: '',
-        description: '',
-        features: [],
-        make: 'Toyota',
-  model: 'Corolla',
-  production_year: 2023,
-  license_plate: 'KIE 12345',
-  vehicle_type: 'Sedan',
-  engine_type: 'Hybrid',
-  mileage: 5800,
-  status: 'Available',
-  daily_rate: 120,
-  weekly_rate: 700,
-  monthly_rate: 2800,
-  image_url: 'https://upload.wikimedia.org/wikipedia/commons/f/f6/Toyota_Corolla_Limousine_Hybrid_Genf_2019_1Y7A5576.jpg',
-  description: 'Modern and fuel-efficient Toyota Corolla with hybrid engine. Features include automatic transmission, climate control, backup camera, and smartphone connectivity. Perfect for city driving and short trips. Regularly maintained with recent service.',
-  features: ['GPS Navigation', 'Bluetooth Connectivity', 'Backup Camera', 'Climate Control', 'USB Charging Ports', 'Cruise Control']
 
+    // Open modal to add new vehicle
+    const openAddVehicleModal = () => {
+      isEditMode.value = false;
+      
+      // Reset form with default values
+      vehicleForm.value = {
+        id: null,
+        make: 'Toyota',
+        model: 'Corolla',
+        production_year: 2023,
+        license_plate: 'KIE 12345',
+        vehicle_type: 'Sedan',
+        engine_type: 'Hybrid',
+        mileage: 5800,
+        status: 'Available',
+        daily_rate: 120,
+        weekly_rate: 700,
+        monthly_rate: 2800,
+        image_url: 'https://upload.wikimedia.org/wikipedia/commons/f/f6/Toyota_Corolla_Limousine_Hybrid_Genf_2019_1Y7A5576.jpg',
+        description: 'Modern and fuel-efficient Toyota Corolla with hybrid engine. Features include automatic transmission, climate control, backup camera, and smartphone connectivity. Perfect for city driving and short trips. Regularly maintained with recent service.',
+        features: ['GPS Navigation', 'Bluetooth Connectivity', 'Backup Camera', 'Climate Control', 'USB Charging Ports', 'Cruise Control']
       };
+      
+      showVehicleModal.value = true;
+    };
+    
+    // Open modal to edit an existing vehicle
+    const openEditVehicleModal = (vehicle) => {
+      isEditMode.value = true;
+      
+      // Deep clone vehicle data to avoid modifying the original before submitting
+      vehicleForm.value = JSON.parse(JSON.stringify({
+        id: vehicle.id,
+        make: vehicle.make || '',
+        model: vehicle.model || '',
+        production_year: vehicle.production_year || new Date().getFullYear(),
+        license_plate: vehicle.license_plate || '',
+        vehicle_type: vehicle.vehicle_type || 'Sedan',
+        engine_type: vehicle.engine_type || 'Petrol',
+        mileage: vehicle.mileage || 0,
+        status: vehicle.status || 'Available',
+        daily_rate: vehicle.daily_rate || 0,
+        weekly_rate: vehicle.weekly_rate || 0,
+        monthly_rate: vehicle.monthly_rate || 0,
+        image_url: vehicle.image_url || '',
+        description: vehicle.description || '',
+        // Ensure features is an array even if null or undefined
+        features: Array.isArray(vehicle.features) ? [...vehicle.features] : []
+      }));
+      
       showVehicleModal.value = true;
     };
     
@@ -485,18 +628,13 @@ const openAddVehicleModal = () => {
       showVehicleModal.value = false;
     };
 
-// Save vehicle (create)
-const saveVehicle = async () => {
+    // Save vehicle (create or update)
+    const saveVehicle = async () => {
       isSaving.value = true;
 
       try {
         // Create a copy of the form data to ensure we're not sending any unexpected fields
         const vehicleData = { ...vehicleForm.value };
-        
-        // Make sure we're not sending an ID for a new vehicle
-        if (vehicleData.id) {
-          delete vehicleData.id;
-        }
         
         // Ensure numeric fields are actually numbers, not strings
         vehicleData.production_year = Number(vehicleData.production_year);
@@ -508,9 +646,17 @@ const saveVehicle = async () => {
         // Remove any empty features
         vehicleData.features = vehicleData.features.filter(feature => feature.trim() !== '');
         
-        console.log('Saving vehicle data:', vehicleData);
+        console.log(`${isEditMode.value ? 'Updating' : 'Creating'} vehicle data:`, vehicleData);
         
-        await VehicleService.createVehicle(vehicleData);
+        if (isEditMode.value) {
+          // Update existing vehicle
+          await VehicleService.updateVehicle(vehicleData.id, vehicleData);
+          alert('Vehicle updated successfully!');
+        } else {
+          // Create new vehicle
+          await VehicleService.createVehicle(vehicleData);
+          alert('Vehicle added successfully!');
+        }
         
         // Refresh vehicles list
         await fetchVehicles();
@@ -518,11 +664,9 @@ const saveVehicle = async () => {
         // Close modal
         showVehicleModal.value = false;
         
-        // Show success message
-        alert('Vehicle added successfully!');
       } catch (err) {
-        console.error('Error saving vehicle:', err);
-        alert('Failed to save vehicle. Please try again.');
+        console.error(`Error ${isEditMode.value ? 'updating' : 'creating'} vehicle:`, err);
+        alert(`Failed to ${isEditMode.value ? 'update' : 'create'} vehicle. Please try again.`);
       } finally {
         isSaving.value = false;
       }
@@ -532,6 +676,7 @@ const saveVehicle = async () => {
     onMounted(() => {
       fetchVehicles();
     });
+
     return {
       vehicles,
       loading,
@@ -540,8 +685,13 @@ const saveVehicle = async () => {
       filteredVehicles,
       showVehicleModal,
       isSaving,
+      isEditMode,
       vehicleForm,
+      sortField,
+      sortDirection,
+      toggleSort,
       openAddVehicleModal,
+      openEditVehicleModal,
       closeVehicleModal,
       saveVehicle,
       addFeature,

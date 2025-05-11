@@ -60,7 +60,7 @@ onMounted(async () => {
             <!-- Vehicle Listings -->
             <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 <CarListing 
-                  v-for="vehicle in filteredVehicles.slice(0, limit || filteredVehicles.length)" 
+                  v-for="vehicle in vehicles.slice(0, limit )" 
                   :key="vehicle.id" 
                   :vehicle="vehicle">
                 </CarListing>

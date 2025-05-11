@@ -93,18 +93,18 @@ onMounted(async () => {
             <!-- Vehicle Image -->
             <div class="h-64 w-full overflow-hidden bg-gray-200">
               <img 
-                :src="vehicle.imageUrl || def" 
+                :src="vehicle.image_url || def" 
                 :alt="vehicle.make + ' ' + vehicle.model"
                 class="w-full h-full object-cover"
               />
             </div>
-            
+            <p> dsads a d % {{ vehicle}}</p>
             <!-- Vehicle Details -->
             <div class="p-6">
               <div class="flex justify-between items-start mb-4">
                 <div>
                   <h1 class="text-3xl font-bold text-gray-800">{{ vehicle.make }} {{ vehicle.model }}</h1>
-                  <p class="text-gray-600">{{ vehicle.productionYear }} • {{ vehicle.vehicleType }}</p>
+                  <p class="text-gray-600">{{ vehicle.production_year }} • {{ vehicle.vehicle_type }}</p>
                 </div>
                 <span :class="[statusColor, 'px-3 py-1 text-sm font-semibold rounded-full']">
                   {{ vehicle.status }}
@@ -117,7 +117,7 @@ onMounted(async () => {
                     <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
                     <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h3.05a2.5 2.5 0 014.9 0H20a1 1 0 001-1V5a1 1 0 00-1-1H3z" />
                   </svg>
-                  <span class="text-gray-700">License Plate: {{ vehicle.licensePlate }}</span>
+                  <span class="text-gray-700">License Plate: {{ vehicle.license_plate }}</span>
                 </div>
                 <div class="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -129,13 +129,13 @@ onMounted(async () => {
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                   </svg>
-                  <span class="text-gray-700">Engine Type: {{ vehicle.engineType }}</span>
+                  <span class="text-gray-700">Engine Type: {{ vehicle.engine_type }}</span>
                 </div>
                 <div class="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v-1l1-1 1-1-0.257-0.257A6 6 0 1118 8zm-6-4a1 1 0 10-2 0v1a1 1 0 102 0V4z" clip-rule="evenodd" />
                   </svg>
-                  <span class="text-gray-700">Vehicle Type: {{ vehicle.vehicleType }}</span>
+                  <span class="text-gray-700">Vehicle Type: {{ vehicle.vehicle_type }}</span>
                 </div>
               </div>
               
@@ -157,15 +157,15 @@ onMounted(async () => {
             <div class="mb-6">
               <div class="flex justify-between items-center mb-2">
                 <span class="text-gray-600">Daily Rate:</span>
-                <span class="text-xl font-bold text-indigo-600">{{ formatCurrency(vehicle.dailyRate) }} PLN</span>
+                <span class="text-xl font-bold text-indigo-600">{{ formatCurrency(vehicle.daily_rate) }} PLN</span>
               </div>
               <div class="flex justify-between items-center mb-2">
                 <span class="text-gray-600">Weekly Rate:</span>
-                <span class="text-lg font-semibold text-indigo-600">{{ formatCurrency(vehicle.weeklyRate) }} PLN</span>
+                <span class="text-lg font-semibold text-indigo-600">{{ formatCurrency(vehicle.weekly_rate) }} PLN</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Monthly Rate:</span>
-                <span class="text-lg font-semibold text-indigo-600">{{ formatCurrency(vehicle.monthlyRate) }} PLN</span>
+                <span class="text-lg font-semibold text-indigo-600">{{ formatCurrency(vehicle.monthly_rate) }} PLN</span>
               </div>
             </div>
             

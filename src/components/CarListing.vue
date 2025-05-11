@@ -47,8 +47,9 @@ const isHovered = ref(false);
     <!-- Vehicle Image -->
     <div class="h-48 w-full overflow-hidden">
       <img 
-        :src="vehicle.imageUrl || def" 
+        :src="vehicle.image_url || def" 
         :alt="vehicle.make + ' ' + vehicle.model"
+
         class="w-full h-full object-cover transition-all duration-500"
         :class="{ 'scale-110': isHovered }"
       />
@@ -65,7 +66,7 @@ const isHovered = ref(false);
       <!-- Vehicle Info -->
       <div class="mb-4">
         <h3 class="text-xl font-bold text-gray-800">{{ vehicle.make }} {{ vehicle.model }}</h3>
-        <p class="text-gray-600">{{ vehicle.productionYear }} • {{ vehicle.vehicleType }}</p>
+        <p class="text-gray-600">{{ vehicle.production_year }} • {{ vehicle.vehicle_type }}</p>
       </div>
       
       <!-- Features/Details -->
@@ -74,7 +75,7 @@ const isHovered = ref(false);
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <span>{{ vehicle.engineType }}</span>
+          <span>{{ vehicle.engine_type }}</span>
         </div>
         
         <div class="flex items-center text-sm text-gray-600">
@@ -88,7 +89,7 @@ const isHovered = ref(false);
       <!-- Price and CTA -->
       <div class="flex items-center justify-between mt-6">
         <div class="text-lg font-bold text-indigo-600">
-          {{ formatCurrency(vehicle.dailyRate) }}<span class="text-sm font-normal"> PLN/day</span>
+          {{ formatCurrency(vehicle.daily_rate) }}<span class="text-sm font-normal"> PLN/day</span>
         </div>
         
         <RouterLink

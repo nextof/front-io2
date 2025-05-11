@@ -6,7 +6,7 @@ const config = {
     
     // Authentication endpoints
     authEndpoints: {
-      login: 'auth/signin',
+      login: 'auth/login',
       register: 'auth/signup',
       refreshToken: 'auth/refreshtoken'
     },

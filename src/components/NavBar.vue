@@ -11,6 +11,9 @@ const isLoggedIn = ref(false);
 const userData = ref(null);
 
 const isActiveLink = (routePath) => {
+  if (routePath === '/staff' && route.path.startsWith('/staff')) {
+    return true;
+  }
   return route.path === routePath;
 };
 
@@ -62,9 +65,11 @@ onUnmounted(() => {
   window.removeEventListener('user-login', handleUserLogin);
 });
 
-// Check if user is admin
-const isAdmin = () => {
-  return userData.value?.roles?.includes('ROLE_ADMIN') || false;
+// Check if user is admin or staff member
+const isStaffMember = () => {
+  return userData.value?.roles?.some(role => 
+    role === 'ROLE_ADMIN' || role === 'ROLE_EMPLOYEE' || role === 'ROLE_SERVICE'
+  ) || false;
 };
 
 // Get random pastel color for user avatar
@@ -136,10 +141,10 @@ const getUserAvatarColor = () => {
               Profile
             </RouterLink>
               <RouterLink
-                v-if="isLoggedIn && isAdmin()"
-                to="/admin"
+                v-if="isLoggedIn && isStaffMember()"
+                to="/staff"
                 :class="[
-                  isActiveLink('/admin') ? 'bg-cyan-600 text-white' : 'text-white hover:bg-cyan-500 hover:text-white', 
+                  isActiveLink('/staff') ? 'bg-cyan-600 text-white' : 'text-white hover:bg-cyan-500 hover:text-white', 
                   'rounded-md px-5 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow'
                 ]"
               >
@@ -227,11 +232,11 @@ const getUserAvatarColor = () => {
           Profile
         </RouterLink>
         <RouterLink
-          v-if="isLoggedIn && isAdmin()"
-          to="/admin"
+          v-if="isLoggedIn && isStaffMember()"
+          to="/staff"
           @click="toggleMenu"
           :class="[
-            isActiveLink('/admin') ? 'bg-cyan-700 text-white' : 'text-white hover:bg-cyan-500',
+            isActiveLink('/staff') ? 'bg-cyan-700 text-white' : 'text-white hover:bg-cyan-500',
             'block rounded-md px-3 py-2 text-base font-medium transition-colors'
           ]"
         >

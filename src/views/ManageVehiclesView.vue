@@ -1,0 +1,552 @@
+<template>
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Manage Vehicles</h2>
+        <button
+          @click="openAddVehicleModal"
+          class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+          Add New Vehicle
+        </button>
+      </div>
+
+      <!-- Loading and Error States -->
+      <div v-if="loading" class="text-center py-10">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p class="mt-2">Loading vehicles...</p>
+      </div>
+
+      <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+        {{ error }}
+      </div>
+
+      <!-- Vehicles List -->
+      <div v-else>
+        <!-- Simple Search -->
+        <div class="mb-6">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search vehicles..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="py-3 px-4 text-left">ID</th>
+                <th class="py-3 px-4 text-left">Make & Model</th>
+                <th class="py-3 px-4 text-left">License Plate</th>
+                <th class="py-3 px-4 text-left">Status</th>
+                <th class="py-3 px-4 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="vehicle in filteredVehicles" :key="vehicle.id" class="border-t hover:bg-gray-50">
+                <td class="py-3 px-4">{{ vehicle.id }}</td>
+                <td class="py-3 px-4">{{ vehicle.make }} {{ vehicle.model }}</td>
+                <td class="py-3 px-4">{{ vehicle.license_plate }}</td>
+                <td class="py-3 px-4">
+                  <span
+                    :class="{
+                      'bg-green-100 text-green-800': vehicle.status === 'Available',
+                      'bg-blue-100 text-blue-800': vehicle.status === 'Reserved',
+                      'bg-purple-100 text-purple-800': vehicle.status === 'Rented',
+                      'bg-red-100 text-red-800': vehicle.status === 'Under Maintenance'
+                    }"
+                    class="inline-block px-2 py-1 text-xs font-semibold rounded-full"
+                  >
+                    {{ vehicle.status }}
+                  </span>
+                </td>
+                <td class="py-3 px-4">
+                  <button
+                    class="text-blue-600 hover:text-blue-800"
+                    title="Edit"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+              <!-- Empty state -->
+              <tr v-if="filteredVehicles.length === 0">
+                <td colspan="5" class="py-6 text-center text-gray-500">
+                  No vehicles found matching your criteria
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Vehicle Modal -->
+  <div v-if="showVehicleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Add New Vehicle</h3>
+          <button @click="closeVehicleModal" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <form @submit.prevent="saveVehicle">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Make -->
+            <div>
+              <label for="make" class="block text-sm font-medium text-gray-700 mb-1">Make *</label>
+              <input
+                id="make"
+                v-model="vehicleForm.make"
+                type="text"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Model -->
+            <div>
+              <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Model *</label>
+              <input
+                id="model"
+                v-model="vehicleForm.model"
+                type="text"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Production Year -->
+            <div>
+              <label for="production_year" class="block text-sm font-medium text-gray-700 mb-1">Production Year *</label>
+              <input
+                id="production_year"
+                v-model="vehicleForm.production_year"
+                type="number"
+                required
+                min="1900"
+                :max="new Date().getFullYear() + 1"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- License Plate -->
+            <div>
+              <label for="license_plate" class="block text-sm font-medium text-gray-700 mb-1">License Plate *</label>
+              <input
+                id="license_plate"
+                v-model="vehicleForm.license_plate"
+                type="text"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Vehicle Type -->
+            <div>
+              <label for="vehicleType" class="block text-sm font-medium text-gray-700 mb-1">Vehicle Type *</label>
+              <select
+                id="vehicleType"
+                v-model="vehicleForm.vehicle_type"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Sedan">Sedan</option>
+                <option value="SUV">SUV</option>
+                <option value="Crossover">Crossover</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Electric">Electric</option>
+                <option value="Sports">Sports</option>
+                <option value="Luxury">Luxury</option>
+              </select>
+            </div>
+
+            <!-- Engine Type -->
+            <div>
+              <label for="engine_type" class="block text-sm font-medium text-gray-700 mb-1">Engine Type *</label>
+              <select
+                id="engine_type"
+                v-model="vehicleForm.engine_type"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Electric">Electric</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+
+            <!-- Mileage -->
+            <div>
+              <label for="mileage" class="block text-sm font-medium text-gray-700 mb-1">Mileage *</label>
+              <input
+                id="mileage"
+                v-model="vehicleForm.mileage"
+                type="number"
+                required
+                min="0"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Status -->
+            <div>
+              <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status *</label>
+              <select
+                id="status"
+                v-model="vehicleForm.status"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Available">Available</option>
+                <option value="Reserved">Reserved</option>
+                <option value="Rented">Rented</option>
+                <option value="Under Maintenance">Under Maintenance</option>
+              </select>
+            </div>
+
+            <!-- Daily Rate -->
+            <div>
+              <label for="daily_rate" class="block text-sm font-medium text-gray-700 mb-1">Daily Rate (PLN) *</label>
+              <input
+                id="daily_rate"
+                v-model="vehicleForm.daily_rate"
+                type="number"
+                required
+                min="0"
+                step="0.01"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Weekly Rate -->
+            <div>
+              <label for="weekly_rate" class="block text-sm font-medium text-gray-700 mb-1">Weekly Rate (PLN) *</label>
+              <input
+                id="weekly_rate"
+                v-model="vehicleForm.weekly_rate"
+                type="number"
+                required
+                min="0"
+                step="0.01"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Monthly Rate -->
+            <div>
+              <label for="monthly_rate" class="block text-sm font-medium text-gray-700 mb-1">Monthly Rate (PLN) *</label>
+              <input
+                id="monthly_rate"
+                v-model="vehicleForm.monthly_rate"
+                type="number"
+                required
+                min="0"
+                step="0.01"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Image URL -->
+            <div class="md:col-span-2">
+              <label for="imageUrl" class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+              <input
+                id="imageUrl"
+                v-model="vehicleForm.image_url"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Description -->
+            <div class="md:col-span-2">
+              <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea
+                id="description"
+                v-model="vehicleForm.description"
+                rows="4"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              ></textarea>
+            </div>
+
+            <!-- Features -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Features</label>
+              <div class="space-y-2">
+                <div 
+                  v-for="(feature, index) in vehicleForm.features" 
+                  :key="index"
+                  class="flex items-center"
+                >
+                  <input
+                    type="text"
+                    v-model="vehicleForm.features[index]"
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter vehicle feature"
+                  />
+                  <button
+                    type="button"
+                    @click="removeFeature(index)"
+                    class="ml-2 p-2 text-red-600 hover:text-red-800"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  @click="addFeature"
+                  class="px-4 py-2 border border-dashed border-gray-300 rounded-md text-gray-600 hover:text-gray-800 hover:border-gray-400 w-full flex items-center justify-center"
+                >
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  Add Feature
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="mt-6 flex justify-end space-x-3">
+            <button
+              type="button"
+              @click="closeVehicleModal"
+              class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              :disabled="isSaving"
+            >
+              {{ isSaving ? 'Saving...' : 'Save Vehicle' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+/* Hide spinner buttons for specific number inputs using their IDs */
+#mileage::-webkit-inner-spin-button,
+#mileage::-webkit-outer-spin-button,
+#daily_rate::-webkit-inner-spin-button,
+#daily_rate::-webkit-outer-spin-button,
+#weekly_rate::-webkit-inner-spin-button,
+#weekly_rate::-webkit-outer-spin-button,
+#monthly_rate::-webkit-inner-spin-button,
+#monthly_rate::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+#mileage, #daily_rate, #weekly_rate, #monthly_rate {
+  -moz-appearance: textfield;
+}
+
+/* Keep spinner for production_year */
+#production_year::-webkit-inner-spin-button,
+#production_year::-webkit-outer-spin-button {
+  -webkit-appearance: auto;
+  margin: auto;
+}
+
+#production_year {
+  -moz-appearance: auto;
+}
+</style>
+
+<script>
+import { ref, computed, onMounted } from 'vue';
+import VehicleService from '../services/VehicleService';
+
+export default {
+  name: 'ManageVehiclesView',
+  setup() {
+    // State
+    const vehicles = ref([]);
+    const loading = ref(true);
+    const error = ref(null);
+    const searchQuery = ref('');
+    const showVehicleModal = ref(false);
+    const isSaving = ref(false);
+
+// Vehicle form
+const vehicleForm = ref({
+      make: '',
+      model: '',
+      production_year: new Date().getFullYear(),
+      license_plate: '',
+      vehicle_type: 'Sedan',
+      engine_type: 'Petrol',
+      mileage: 0,
+      status: 'Available',
+      daily_rate: 100,
+      weekly_rate: 600,
+      monthly_rate: 2400,
+      image_url: '',
+      description: '',
+      features: ['GPS', 'Bluetooth']
+    });
+
+    // Filtered vehicles
+    const filteredVehicles = computed(() => {
+      if (searchQuery.value.trim() === '') {
+        return vehicles.value;
+      }
+      
+      const query = searchQuery.value.toLowerCase();
+      return vehicles.value.filter(vehicle => {
+        return (
+          vehicle.make?.toLowerCase().includes(query) ||
+          vehicle.model?.toLowerCase().includes(query) ||
+          vehicle.license_plate?.toLowerCase().includes(query) ||
+          vehicle.vehicle_type?.toLowerCase().includes(query)
+        );
+      });
+    });
+// Fetch vehicles
+const fetchVehicles = async () => {
+      loading.value = true;
+      error.value = null;
+
+      try {
+        const response = await VehicleService.getAllVehicles();
+        console.log('Fetched vehicles:', response.data);
+        vehicles.value = response.data;
+      } catch (err) {
+        console.error('Error fetching vehicles:', err);
+        error.value = 'Failed to load vehicles. Please try again.';
+      } finally {
+        loading.value = false;
+      }
+    };
+// Open modal to add new vehicle
+const openAddVehicleModal = () => {
+      vehicleForm.value = {
+        make: '',
+        model: '',
+        production_year: new Date().getFullYear(),
+        license_plate: '',
+        status: 'Available',
+        image_url: '',
+        description: '',
+        features: [],
+        make: 'Toyota',
+  model: 'Corolla',
+  production_year: 2023,
+  license_plate: 'KIE 12345',
+  vehicle_type: 'Sedan',
+  engine_type: 'Hybrid',
+  mileage: 5800,
+  status: 'Available',
+  daily_rate: 120,
+  weekly_rate: 700,
+  monthly_rate: 2800,
+  image_url: 'https://upload.wikimedia.org/wikipedia/commons/f/f6/Toyota_Corolla_Limousine_Hybrid_Genf_2019_1Y7A5576.jpg',
+  description: 'Modern and fuel-efficient Toyota Corolla with hybrid engine. Features include automatic transmission, climate control, backup camera, and smartphone connectivity. Perfect for city driving and short trips. Regularly maintained with recent service.',
+  features: ['GPS Navigation', 'Bluetooth Connectivity', 'Backup Camera', 'Climate Control', 'USB Charging Ports', 'Cruise Control']
+
+      };
+      showVehicleModal.value = true;
+    };
+    
+    // Add a new feature field
+    const addFeature = () => {
+      vehicleForm.value.features.push('');
+    };
+    
+    // Remove a feature by index
+    const removeFeature = (index) => {
+      vehicleForm.value.features.splice(index, 1);
+    };
+
+    // Close vehicle modal
+    const closeVehicleModal = () => {
+      showVehicleModal.value = false;
+    };
+
+// Save vehicle (create)
+const saveVehicle = async () => {
+      isSaving.value = true;
+
+      try {
+        // Create a copy of the form data to ensure we're not sending any unexpected fields
+        const vehicleData = { ...vehicleForm.value };
+        
+        // Make sure we're not sending an ID for a new vehicle
+        if (vehicleData.id) {
+          delete vehicleData.id;
+        }
+        
+        // Ensure numeric fields are actually numbers, not strings
+        vehicleData.production_year = Number(vehicleData.production_year);
+        vehicleData.mileage = Number(vehicleData.mileage);
+        vehicleData.daily_rate = Number(vehicleData.daily_rate);
+        vehicleData.weekly_rate = Number(vehicleData.weekly_rate);
+        vehicleData.monthly_rate = Number(vehicleData.monthly_rate);
+        
+        // Remove any empty features
+        vehicleData.features = vehicleData.features.filter(feature => feature.trim() !== '');
+        
+        console.log('Saving vehicle data:', vehicleData);
+        
+        await VehicleService.createVehicle(vehicleData);
+        
+        // Refresh vehicles list
+        await fetchVehicles();
+        
+        // Close modal
+        showVehicleModal.value = false;
+        
+        // Show success message
+        alert('Vehicle added successfully!');
+      } catch (err) {
+        console.error('Error saving vehicle:', err);
+        alert('Failed to save vehicle. Please try again.');
+      } finally {
+        isSaving.value = false;
+      }
+    };
+
+    // Load vehicles when component is mounted
+    onMounted(() => {
+      fetchVehicles();
+    });
+    return {
+      vehicles,
+      loading,
+      error,
+      searchQuery,
+      filteredVehicles,
+      showVehicleModal,
+      isSaving,
+      vehicleForm,
+      openAddVehicleModal,
+      closeVehicleModal,
+      saveVehicle,
+      addFeature,
+      removeFeature
+    };
+  }
+};
+</script>

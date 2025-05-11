@@ -93,16 +93,16 @@ export default {
           
           // Navigate to appropriate page based on role
           if (userData.roles && userData.roles.includes('ROLE_ADMIN')) {
-            this.$router.push({ name: 'admin' });
+            this.$router.push({ name: 'staff-vehicles' });
           } else {
             this.$router.push({ name: 'home' });
           }
         } else {
-          this.errorMessage = 'Nieprawidłowe dane logowania.';
+          this.errorMessage = 'Incorrect credentials.';
           this.$emit('login-failure', this.errorMessage);
         }
       } catch (error) {
-        this.errorMessage = "Błąd logowania. Sprawdź dane.";
+        this.errorMessage = "Login error. Please try again.";
         console.error("Login error:", error);
         this.$emit('login-failure', this.errorMessage);
       }

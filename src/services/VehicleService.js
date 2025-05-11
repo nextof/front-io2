@@ -46,7 +46,6 @@ export default {
       delete newVehicleData.id;
     }
     
-    console.log('Creating vehicle with data:', newVehicleData);
     return axios.post(`${API_URL}/add`, newVehicleData);
   },
 

@@ -98,7 +98,7 @@ onMounted(async () => {
                 class="w-full h-full object-cover"
               />
             </div>
-            <p> dsads a d % {{ vehicle}}</p>
+
             <!-- Vehicle Details -->
             <div class="p-6">
               <div class="flex justify-between items-start mb-4">

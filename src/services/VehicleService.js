@@ -9,7 +9,7 @@ export default {
    * @returns {Promise} Promise with vehicles data
    */
   getAllVehicles() {
-    return axios.get(API_URL);
+    return axios.get(`${API_URL}/get`);
   },
 
   /**
@@ -18,7 +18,7 @@ export default {
    * @returns {Promise} Promise with vehicle data
    */
   getVehicleById(id) {
-    return axios.get(`${API_URL}/${id}`);
+    return axios.get(`${API_URL}/get/${id}`);
   },
 
   /**

@@ -9,6 +9,8 @@ import StaffView from '../views/StaffView.vue';
 import ManageVehiclesView from '../views/ManageVehiclesView.vue';
 import UnauthorizedView from '../views/UnauthorizedView.vue';
 import { getCurrentUser } from '../services/UserService';
+import PaymentSuccessView from '../views/PaymentSuccessView.vue';
+import PaymentCancelView from '../views/PaymentCancelView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +35,16 @@ const router = createRouter({
       name: 'client',
       component: ClientView,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/payment/success',
+      name: 'payment-success',
+      component: PaymentSuccessView
+    },
+    {
+      path: '/payment/cancel',
+      name: 'payment-cancel',
+      component: PaymentCancelView
     },
     {
       path: '/staff',
@@ -69,6 +81,7 @@ const router = createRouter({
       name: 'not-found',
       component: NotFoundView
     }
+
   ],
 });
 

@@ -263,17 +263,34 @@
                             <tr
                                 v-for="task in filteredTasks"
                                 :key="task.id"
-                                class="border-t hover:bg-gray-50"
+                                :class="[
+                                    'border-t',
+                                    task.done
+                                        ? 'hover:bg-gray-300 bg-gray-200 text-gray-600 line-through'
+                                        : 'hover:bg-gray-50',
+                                ]"
                             >
                                 <td class="py-3 px-4">{{ task.id }}</td>
                                 <td class="py-3 px-4">{{ task.start_date }}</td>
                                 <td class="py-3 px-4">{{ task.end_date }}</td>
-                                <td class="py-3 px-4">{{ task.cost }}</td>
                                 <td class="py-3 px-4">
-                                    {{ task.description }}
+                                    {{ task.cost ? task.cost + 'PLN' : '' }}
                                 </td>
                                 <td class="py-3 px-4">
-                                    {{ task.vehicle.license_plate }}
+                                    {{
+                                        task.description
+                                            ? task.description.slice(0, 50) +
+                                              '...'
+                                            : ''
+                                    }}
+                                </td>
+                                <td class="py-3 px-4">
+                                    <RouterLink
+                                        :to="`/vehicles/${task.vehicle.id}`"
+                                        class="text-blue-600 hover:text-blue-800 hover:underline"
+                                    >
+                                        {{ task.vehicle.license_plate }}
+                                    </RouterLink>
                                 </td>
                                 <td class="py-3 px-5">
                                     <div class="flex space-x-2">
@@ -283,7 +300,7 @@
                                             title="Edit"
                                         >
                                             <svg
-                                                class="w-10 h-5"
+                                                class="w-5 h-5"
                                                 fill="none"
                                                 stroke="currentColor"
                                                 viewBox="0 0 24 24"
@@ -294,6 +311,35 @@
                                                     stroke-linejoin="round"
                                                     stroke-width="2"
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                                />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            @click="setTaskToDone(task)"
+                                            :class="[
+                                                task.done ||
+                                                task.end_date == null
+                                                    ? ''
+                                                    : 'text-green-600 hover:text-green-800 cursor-pointer transition-colors duration-300 transform hover:scale-110',
+                                            ]"
+                                            title="Done"
+                                            :disabled="
+                                                task.done ||
+                                                task.end_date == null
+                                            "
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="1.5"
+                                                stroke="currentColor"
+                                                class="size-6"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                                                 />
                                             </svg>
                                         </button>
@@ -458,6 +504,7 @@ export default {
             start_date: null,
             end_date: null,
             vehicle: null,
+            done: false,
         });
 
         // Sorting
@@ -551,6 +598,7 @@ export default {
                     end_date: task.end_date,
                     start_date: task.start_date,
                     vehicle: task.vehicle,
+                    done: task.done,
                 })
             );
 
@@ -560,6 +608,30 @@ export default {
         // Close task modal
         const closeTaskModal = () => {
             showTaskModal.value = false;
+        };
+
+        // Set task to done
+        const setTaskToDone = async task => {
+            const updatedTask = { ...task, done: true };
+            const updatedVehicle = { ...task.vehicle, status: 'Available' };
+
+            try {
+                await VehicleService.updateMaintenanceTask(
+                    task.id,
+                    updatedTask
+                );
+
+                await VehicleService.updateVehicle(
+                    updatedVehicle.id,
+                    updatedVehicle
+                );
+
+                alert('Task marked as done, vehicle is available again!');
+                await fetchMaintenanceTasks();
+            } catch (err) {
+                console.error('Failed to mark task as done:', err);
+                alert('Failed to mark task as done. Try again.');
+            }
         };
 
         // Save task (update)
@@ -609,6 +681,7 @@ export default {
             toggleSort,
             openEditTaskModal,
             closeTaskModal,
+            setTaskToDone,
             saveTask,
         };
     },

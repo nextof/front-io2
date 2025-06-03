@@ -60,23 +60,17 @@
                                 >
                                     Reservations
                                 </a>
-                                <a
-                                    v-if="isAdmin"
-                                    href="#"
-                                    @click.prevent="
-                                        showPlaceholder('User Management')
-                                    "
-                                    class="block px-4 py-2 rounded-md hover:bg-blue-50"
-                                    :class="
-                                        placeholderTitle ===
-                                            'User Management' &&
-                                        showingPlaceholder
-                                            ? 'bg-blue-50 text-blue-600 font-medium'
-                                            : 'text-gray-500 font-medium'
-                                    "
+                                <RouterLink
+                                    to="/staff/users"
+                                    class="block px-4 py-2 rounded-md hover:bg-blue-50 text-blue-600 font-medium"
+                                    :class="{
+                                        'bg-blue-50':
+                                            currentRoute === '/staff/users',
+                                    }"
+                                    @click="hidePlaceholder"
                                 >
                                     Manage Users
-                                </a>
+                                </RouterLink>
                             </nav>
                         </div>
                     </div>

@@ -2,9 +2,7 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <div class="p-6">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">
-                    Maintenance Tasks
-                </h2>
+                <h2 class="text-2xl font-bold text-gray-800">Manage Users</h2>
             </div>
 
             <!-- Loading and Error States -->
@@ -12,7 +10,7 @@
                 <div
                     class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
                 ></div>
-                <p class="mt-2">Loading tasks...</p>
+                <p class="mt-2">Loading users...</p>
             </div>
 
             <div
@@ -22,14 +20,14 @@
                 {{ error }}
             </div>
 
-            <!-- tasks List -->
+            <!-- users List -->
             <div v-else>
                 <!-- Simple Search -->
                 <div class="mb-6">
                     <input
                         v-model="searchQuery"
                         type="text"
-                        placeholder="Search tasks..."
+                        placeholder="Search for a user..."
                         class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
@@ -83,13 +81,13 @@
                                     </div>
                                 </th>
                                 <th
-                                    @click="toggleSort('start_date')"
+                                    @click="toggleSort('username')"
                                     class="py-3 px-4 text-left cursor-pointer hover:bg-gray-200"
                                 >
                                     <div class="flex items-center">
-                                        Start Date
+                                        Username
                                         <span
-                                            v-if="sortField === 'start_date'"
+                                            v-if="sortField === 'username'"
                                             class="ml-1"
                                         >
                                             <svg
@@ -126,13 +124,13 @@
                                     </div>
                                 </th>
                                 <th
-                                    @click="toggleSort('end_date')"
+                                    @click="toggleSort('email')"
                                     class="py-3 px-4 text-left cursor-pointer hover:bg-gray-200"
                                 >
                                     <div class="flex items-center">
-                                        End Date
+                                        E-mail
                                         <span
-                                            v-if="sortField === 'end_date'"
+                                            v-if="sortField === 'email'"
                                             class="ml-1"
                                         >
                                             <svg
@@ -169,13 +167,13 @@
                                     </div>
                                 </th>
                                 <th
-                                    @click="toggleSort('cost')"
+                                    @click="toggleSort('role')"
                                     class="py-3 px-4 text-left cursor-pointer hover:bg-gray-200"
                                 >
                                     <div class="flex items-center">
-                                        Cost
+                                        Role
                                         <span
-                                            v-if="sortField === 'cost'"
+                                            v-if="sortField === 'role'"
                                             class="ml-1"
                                         >
                                             <svg
@@ -211,91 +209,57 @@
                                         </span>
                                     </div>
                                 </th>
-                                <th
-                                    @click="toggleSort('description')"
-                                    class="py-3 px-4 text-left cursor-pointer hover:bg-gray-200"
-                                >
-                                    <div class="flex items-center">
-                                        Description
-                                        <span
-                                            v-if="sortField === 'description'"
-                                            class="ml-1"
-                                        >
-                                            <svg
-                                                v-if="sortDirection === 'asc'"
-                                                class="w-4 h-4"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M5 15l7-7 7 7"
-                                                ></path>
-                                            </svg>
-                                            <svg
-                                                v-else
-                                                class="w-4 h-4"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M19 9l-7 7-7-7"
-                                                ></path>
-                                            </svg>
-                                        </span>
-                                    </div>
-                                </th>
-
-                                <th class="py-3 px-4 text-left">Vehicle</th>
                                 <th class="py-3 px-4 text-left">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr
-                                v-for="task in filteredTasks"
-                                :key="task.id"
-                                :class="[
-                                    'border-t',
-                                    task.done
-                                        ? 'hover:bg-gray-300 bg-gray-200 text-gray-600 line-through'
-                                        : 'hover:bg-gray-50',
-                                ]"
+                                v-for="user in filteredUsers"
+                                :key="user.id"
+                                class="border-t hover:bg-gray-50"
                             >
-                                <td class="py-3 px-4">{{ task.id }}</td>
-                                <td class="py-3 px-4">{{ task.start_date }}</td>
-                                <td class="py-3 px-4">{{ task.end_date }}</td>
+                                <td class="py-3 px-4">{{ user.id }}</td>
                                 <td class="py-3 px-4">
-                                    {{ task.cost ? task.cost + 'PLN' : '' }}
+                                    <span>
+                                        {{ user.username }}
+                                        <span
+                                            v-if="user.id === currentUser?.id"
+                                            class="text-m text-gray-500 font-semibold ml-2"
+                                        >
+                                            (You)
+                                        </span>
+                                    </span>
                                 </td>
+                                <td class="py-3 px-4">{{ user.email }}</td>
                                 <td class="py-3 px-4">
-                                    {{
-                                        task.description
-                                            ? task.description.slice(0, 50) +
-                                              '...'
-                                            : ''
-                                    }}
-                                </td>
-                                <td class="py-3 px-4">
-                                    <RouterLink
-                                        :to="`/vehicles/${task.vehicle.id}`"
-                                        class="text-blue-600 hover:text-blue-800 hover:underline"
+                                    <span
+                                        :class="[
+                                            'px-2 py-1 rounded-full text-sm font-semibold',
+                                            {
+                                                'bg-blue-100 text-blue-800':
+                                                    user.role === 'ROLE_USER',
+                                                'bg-green-100 text-green-800':
+                                                    user.role ===
+                                                    'ROLE_MODERATOR',
+                                                'bg-yellow-100 text-yellow-800':
+                                                    user.role ===
+                                                    'ROLE_MECHANIC',
+                                                'bg-red-100 text-red-800':
+                                                    user.role === 'ROLE_ADMIN',
+                                            },
+                                        ]"
                                     >
-                                        {{ task.vehicle.license_plate }}
-                                    </RouterLink>
+                                        {{
+                                            roleEmojis[user.role] +
+                                            ' ' +
+                                            rolesDict[user.role]
+                                        }}
+                                    </span>
                                 </td>
-                                <td class="py-3 px-5">
+                                <td class="py-3 px-8">
                                     <div class="flex space-x-2">
                                         <button
-                                            @click="openEditTaskModal(task)"
+                                            @click="openEditUserModal(user)"
                                             class="text-blue-600 hover:text-blue-800 cursor-pointer transition-colors duration-300 transform hover:scale-110"
                                             title="Edit"
                                         >
@@ -314,45 +278,16 @@
                                                 />
                                             </svg>
                                         </button>
-                                        <button
-                                            @click="setTaskToDone(task)"
-                                            :class="[
-                                                task.done ||
-                                                task.end_date == null
-                                                    ? ''
-                                                    : 'text-green-600 hover:text-green-800 cursor-pointer transition-colors duration-300 transform hover:scale-110',
-                                            ]"
-                                            title="Done"
-                                            :disabled="
-                                                task.done ||
-                                                task.end_date == null
-                                            "
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke-width="1.5"
-                                                stroke="currentColor"
-                                                class="size-6"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                                />
-                                            </svg>
-                                        </button>
                                     </div>
                                 </td>
                             </tr>
                             <!-- Empty state -->
-                            <tr v-if="filteredTasks.length === 0">
+                            <tr v-if="filteredUsers.length === 0">
                                 <td
                                     colspan="7"
                                     class="py-6 text-center text-gray-500"
                                 >
-                                    No tasks found matching your criteria
+                                    No users found matching your criteria
                                 </td>
                             </tr>
                         </tbody>
@@ -362,19 +297,19 @@
         </div>
     </div>
 
-    <!-- Task Modal (Edit) -->
+    <!-- User Modal (Edit) -->
     <div
-        v-if="showTaskModal"
+        v-if="showUserModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
         <div
-            class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+            class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         >
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-800">Edit Task</h3>
+                    <h3 class="text-xl font-bold text-gray-800">Edit User</h3>
                     <button
-                        @click="closeTaskModal"
+                        @click="closeUserModal"
                         class="text-gray-500 hover:text-gray-700"
                     >
                         <svg
@@ -394,87 +329,97 @@
                     </button>
                 </div>
 
-                <form @submit.prevent="saveTask" class="space-y-6">
-                    <!-- Start Date -->
+                <form @submit.prevent="saveUser" class="space-y-6">
+                    <!-- Username -->
                     <div>
                         <label
-                            for="start_date"
+                            for="username"
                             class="block text-sm font-medium text-gray-700 mb-1"
-                            >Start Date</label
+                            >Username</label
                         >
                         <input
-                            id="start_date"
-                            v-model="taskForm.start_date"
-                            type="date"
+                            id="username"
+                            v-model="userForm.username"
+                            type="text"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-
-                    <!-- End Date -->
-                    <div>
-                        <label
-                            for="end_date"
-                            class="block text-sm font-medium text-gray-700 mb-1"
-                            >End Date</label
-                        >
-                        <input
-                            id="end_date"
-                            v-model="taskForm.end_date"
-                            type="date"
-                            :min="today"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-
-                    <!-- Cost -->
-                    <div>
-                        <label
-                            for="cost"
-                            class="block text-sm font-medium text-gray-700 mb-1"
-                            >Cost (PLN) *</label
-                        >
-                        <input
-                            id="cost"
-                            v-model="taskForm.cost"
-                            type="number"
                             required
-                            min="0"
-                            step="0.01"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
-                    <!-- Description -->
+                    <!-- Email -->
                     <div>
                         <label
-                            for="description"
+                            for="email"
                             class="block text-sm font-medium text-gray-700 mb-1"
-                            >Description</label
+                            >Email</label
                         >
-                        <textarea
-                            id="description"
-                            v-model="taskForm.description"
-                            rows="4"
+                        <input
+                            id="email"
+                            v-model="userForm.email"
+                            type="email"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        ></textarea>
+                            required
+                        />
+                    </div>
+
+                    <!-- Role Dropdown -->
+                    <div>
+                        <label
+                            for="role"
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Role</label
+                        >
+                        <select
+                            id="role"
+                            v-model="userForm.role"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            required
+                            :disabled="userForm.id === currentUser.id"
+                        >
+                            <option
+                                v-for="(label, key) in rolesDict"
+                                :key="key"
+                                :value="key"
+                            >
+                                {{ label }}
+                            </option>
+                        </select>
                     </div>
 
                     <!-- Form Actions -->
-                    <div class="mt-6 flex justify-end space-x-3">
+                    <div class="mt-6 flex justify-between items-center">
+                        <!-- Delete button -->
                         <button
                             type="button"
-                            @click="closeTaskModal"
-                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                            @click="handleDeleteUser(userForm)"
+                            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            :disabled="
+                                isDeleting ||
+                                isSaving ||
+                                userForm.id === currentUser.id
+                            "
                         >
-                            Cancel
+                            {{ isDeleting ? 'Deleting...' : 'Delete User' }}
                         </button>
-                        <button
-                            type="submit"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                            :disabled="isSaving"
-                        >
-                            {{ isSaving ? 'Saving...' : 'Update Task' }}
-                        </button>
+
+                        <!-- Save/Cancel -->
+                        <div class="flex space-x-3">
+                            <button
+                                type="button"
+                                @click="closeUserModal"
+                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                @click="saveUser(userForm)"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                :disabled="isSaving || isDeleting"
+                            >
+                                {{ isSaving ? 'Saving...' : 'Update User' }}
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -484,29 +429,46 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue';
-import VehicleService from '../services/VehicleService';
+import {
+    getUsersWithRoles,
+    getCurrentUser,
+    deleteUser,
+    updateUser,
+} from '../services/UserService';
 
 export default {
-    name: 'MaintenanceTasksView',
+    name: 'ManageUsersView',
     setup() {
+        // roles mapping
+        const rolesDict = ref({
+            ROLE_USER: 'User',
+            ROLE_MODERATOR: 'Employee',
+            ROLE_MECHANIC: 'Mechanic',
+            ROLE_ADMIN: 'Admin',
+        });
+        const roleEmojis = ref({
+            ROLE_USER: '👤',
+            ROLE_MODERATOR: '📋',
+            ROLE_MECHANIC: '🛠️',
+            ROLE_ADMIN: '👑',
+        });
+
         // State
-        const tasks = ref([]);
+        const currentUser = ref(null);
+        const users = ref([]);
         const loading = ref(true);
         const error = ref(null);
         const searchQuery = ref('');
-        const showTaskModal = ref(false);
+        const showUserModal = ref(false);
         const isSaving = ref(false);
-        const today = new Date().toISOString().split('T')[0];
+        const isDeleting = ref(false);
 
-        // Task form
-        const taskForm = ref({
+        // User form
+        const userForm = ref({
             id: null,
-            cost: null,
-            description: '',
-            start_date: null,
-            end_date: null,
-            vehicle: null,
-            done: false,
+            username: null,
+            email: null,
+            role: null,
         });
 
         // Sorting
@@ -526,37 +488,32 @@ export default {
             }
         };
 
-        // Filtered and sorted tasks
-        const filteredTasks = computed(() => {
-            // First apply search filtering
-            let result = tasks.value;
+        // Filtered and sorted users
+        const filteredUsers = computed(() => {
+            let result = users.value;
 
+            // Search
             if (searchQuery.value.trim() !== '') {
                 const query = searchQuery.value.toLowerCase();
-                result = result.filter(task => {
+                result = result.filter(user => {
                     return (
-                        task.start_date?.includes(query) ||
-                        task.end_date?.includes(query) ||
-                        task.vehicle.license_plate
-                            ?.toLowerCase()
-                            .includes(query) ||
-                        String(task.cost)?.includes(query)
+                        user.username?.toLowerCase().includes(query) ||
+                        user.email?.toLowerCase().includes(query) ||
+                        user.role?.toLowerCase().includes(query)
                     );
                 });
             }
 
-            // Then apply sorting
-            return [...result].sort((a, b) => {
+            // Sort
+            result = [...result].sort((a, b) => {
                 const aValue = a[sortField.value];
                 const bValue = b[sortField.value];
 
-                // Handle null or undefined values
                 if (aValue == null)
                     return sortDirection.value === 'asc' ? -1 : 1;
                 if (bValue == null)
                     return sortDirection.value === 'asc' ? 1 : -1;
 
-                // Compare based on data type
                 if (typeof aValue === 'string') {
                     const comparison = aValue.localeCompare(bValue);
                     return sortDirection.value === 'asc'
@@ -569,123 +526,124 @@ export default {
                         : -comparison;
                 }
             });
+
+            // Move current user to the top
+            if (currentUser.value) {
+                const index = result.findIndex(
+                    u => u.id === currentUser.value.id
+                );
+                if (index !== -1) {
+                    const [adminUser] = result.splice(index, 1);
+                    result.unshift(adminUser);
+                }
+            }
+
+            return result;
         });
 
-        // Fetch maintenance tasks
-        const fetchMaintenanceTasks = async () => {
+        // Fetch users
+        const fetchUsers = async () => {
             loading.value = true;
             error.value = null;
 
             try {
-                const response = await VehicleService.getAllMaintenanceTasks();
-                console.log('Fetched tasks:', response.data);
-                tasks.value = response.data;
+                const response = await getUsersWithRoles();
+                console.log('Fetched users:', response.data);
+                users.value = response.data;
             } catch (err) {
-                console.error('Error fetching tasks:', err);
-                error.value =
-                    'Failed to load maintenance tasks. Please try again.';
+                console.error('Error fetching users:', err);
+                error.value = 'Failed to load users. Please try again.';
             } finally {
                 loading.value = false;
             }
         };
 
-        // Open modal to edit an existing task
-        const openEditTaskModal = task => {
-            // Deep clone task data to avoid modifying the original before submitting
-            taskForm.value = JSON.parse(
+        // Open modal to edit user
+        const openEditUserModal = user => {
+            // Deep clone user data to avoid modifying the original before submitting
+            userForm.value = JSON.parse(
                 JSON.stringify({
-                    id: task.id,
-                    cost: task.cost,
-                    description: task.description,
-                    end_date: task.end_date,
-                    start_date: task.start_date,
-                    vehicle: task.vehicle,
-                    done: task.done,
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
                 })
             );
 
-            showTaskModal.value = true;
+            showUserModal.value = true;
         };
 
-        // Close task modal
-        const closeTaskModal = () => {
-            showTaskModal.value = false;
+        // Close user modal
+        const closeUserModal = () => {
+            showUserModal.value = false;
         };
 
-        // Set task to done
-        const setTaskToDone = async task => {
-            const updatedTask = { ...task, done: true };
-            const updatedVehicle = { ...task.vehicle, status: 'Available' };
-
-            try {
-                await VehicleService.updateMaintenanceTask(
-                    task.id,
-                    updatedTask
-                );
-
-                await VehicleService.updateVehicle(
-                    updatedVehicle.id,
-                    updatedVehicle
-                );
-
-                alert('Task marked as done, vehicle is available again!');
-                await fetchMaintenanceTasks();
-            } catch (err) {
-                console.error('Failed to mark task as done:', err);
-                alert('Failed to mark task as done. Try again.');
-            }
-        };
-
-        // Save task (update)
-        const saveTask = async () => {
+        // Save user (update)
+        const saveUser = async user => {
             isSaving.value = true;
 
             try {
-                // Create a copy of the form data to ensure we're not sending any unexpected fields
-                const taskData = { ...taskForm.value };
+                await updateUser(user);
+                alert('User updated successfully!');
 
-                // Update existing maintenance task
-                await VehicleService.updateMaintenanceTask(
-                    taskData.id,
-                    taskData
-                );
-                alert('Task updated successfully!');
-
-                // Refresh tasks list
-                await fetchMaintenanceTasks();
+                await fetchUsers();
 
                 // Close modal
-                showTaskModal.value = false;
+                showUserModal.value = false;
             } catch (err) {
-                console.error(`Error updating task:`, err);
-                alert(`Failed to update task. Please try again.`);
+                console.error(`Error updating user:`, err);
+                alert(`Failed to update user. Please try again.`);
             } finally {
                 isSaving.value = false;
             }
         };
 
+        // Completly Delete user
+        const handleDeleteUser = async user => {
+            if (confirm('Are you sure you want to delete this user?')) {
+                isDeleting.value = true;
+                try {
+                    await deleteUser(user.id);
+                    alert('User deleted successfully!');
+
+                    await fetchUsers();
+                    // Close modal
+                    showUserModal.value = false;
+                } catch (err) {
+                    console.error(`Error deleting user:`, err);
+                    alert(`Failed to delete user. Please try again.`);
+                } finally {
+                    isDeleting.value = false;
+                }
+            }
+        };
+
         // Load vehicles when component is mounted
-        onMounted(() => {
-            fetchMaintenanceTasks();
+        onMounted(async () => {
+            await fetchUsers();
+            currentUser.value = await getCurrentUser();
         });
 
         return {
-            tasks,
+            rolesDict,
+            roleEmojis,
+            currentUser,
+            users,
             loading,
             error,
             searchQuery,
-            filteredTasks,
-            showTaskModal,
+            filteredUsers,
             isSaving,
-            today,
-            taskForm,
+            isDeleting,
             sortField,
             sortDirection,
             toggleSort,
-            openEditTaskModal,
-            closeTaskModal,
-            setTaskToDone,
-            saveTask,
+            showUserModal,
+            closeUserModal,
+            userForm,
+            openEditUserModal,
+            saveUser,
+            handleDeleteUser,
         };
     },
 };

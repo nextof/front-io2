@@ -265,7 +265,7 @@
                                                 vehicle.status ===
                                                 'Under Maintenance',
                                         }"
-                                        class="inline-block px-2 py-1 text-xs font-semibold rounded-full"
+                                        class="inline-block px-2 py-1 text-sm font-semibold rounded-full"
                                     >
                                         {{ vehicle.status }}
                                     </span>

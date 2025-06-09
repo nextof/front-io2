@@ -45,21 +45,18 @@
                                 >
                                     Maintenance Tasks
                                 </RouterLink>
-                                <a
-                                    href="#"
-                                    @click.prevent="
-                                        showPlaceholder('Reservations')
-                                    "
-                                    class="block px-4 py-2 rounded-md hover:bg-blue-50"
-                                    :class="
-                                        placeholderTitle === 'Reservations' &&
-                                        showingPlaceholder
-                                            ? 'bg-blue-50 text-blue-600 font-medium'
-                                            : 'text-gray-500 font-medium'
-                                    "
+                                <RouterLink
+                                    to="/staff/reservations"
+                                    class="block px-4 py-2 rounded-md hover:bg-blue-50 text-blue-600 font-medium"
+                                    :class="{
+                                        'bg-blue-50':
+                                            currentRoute ===
+                                            '/staff/reservations',
+                                    }"
+                                    @click="hidePlaceholder"
                                 >
                                     Reservations
-                                </a>
+                                </RouterLink>
                                 <RouterLink
                                     to="/staff/users"
                                     class="block px-4 py-2 rounded-md hover:bg-blue-50 text-blue-600 font-medium"

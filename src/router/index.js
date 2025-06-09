@@ -13,6 +13,8 @@ import { getCurrentUser } from '../services/UserService';
 import PaymentSuccessView from '../views/PaymentSuccessView.vue';
 import PaymentCancelView from '../views/PaymentCancelView.vue';
 import ManageUsersView from '../views/ManageUsersView.vue';
+import ReservationsView from '../views/ReservationsView.vue';
+
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,6 +72,11 @@ const router = createRouter({
                     path: 'maintenance-tasks',
                     name: 'staff-maintenance',
                     component: MaintenanceTasksView,
+                },
+                {
+                    path: 'reservations',
+                    name: 'staff-reservations',
+                    component: ReservationsView,
                 },
                 {
                     path: 'users',

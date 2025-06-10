@@ -4,8 +4,8 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Manage Reservations</h2>
         <button
-          @click="showAddReservationForm = true"
-          class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+            @click="showAddReservationForm = true"
+            class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
         >
           Add Reservation
         </button>
@@ -25,10 +25,10 @@
         <!-- Search -->
         <div class="mb-6">
           <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search reservations..."
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search reservations..."
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -36,63 +36,84 @@
         <div class="overflow-x-auto">
           <table class="min-w-full bg-white">
             <thead class="bg-gray-100">
-              <tr>
-                <th @click="toggleSort('id')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">ID</th>
-                <th @click="toggleSort('vehicle_id')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">Vehicle</th>
-                <th @click="toggleSort('client_id')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">User</th>
-                <th @click="toggleSort('start_date')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">Start Date</th>
-                <th @click="toggleSort('end_date')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">End Date</th>
-                <th class="py-3 px-4">Actions</th>
-              </tr>
+            <tr>
+              <th @click="toggleSort('id')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">ID</th>
+              <th @click="toggleSort('vehicle_id')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">Vehicle</th>
+              <th @click="toggleSort('client_id')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">User</th>
+              <th @click="toggleSort('start_date')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">Start Date</th>
+              <th @click="toggleSort('end_date')" class="py-3 px-4 cursor-pointer hover:bg-gray-200">End Date</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4">Actions</th>
+            </tr>
             </thead>
             <tbody>
-              <tr
+            <tr
                 v-for="reservation in filteredReservations"
                 :key="reservation.id"
                 class="border-t hover:bg-gray-50"
-              >
-                <td class="py-3 px-4">{{ reservation.id }}</td>
-                <td class="py-3 px-4">
-                  <router-link
+            >
+              <td class="py-3 px-4">{{ reservation.id }}</td>
+              <td class="py-3 px-4">
+                <router-link
                     :to="`/vehicles/${reservation.vehicle_id}`"
                     class="text-blue-600 hover:underline"
-                  >
-                    {{ vehicleMap[reservation.vehicle_id] || 'Loading...' }}
-                  </router-link>
-                </td>
-                <td class="py-3 px-4">
-                  {{ userMap[reservation.client_id] || 'Loading...' }}
-                </td>
-                <td class="py-3 px-4">{{ reservation.start_date }}</td>
-                <td class="py-3 px-4">{{ reservation.end_date }}</td>
-                <td class="py-3 px-4">
-                  <div class="flex space-x-2">
-                    <button
+                >
+                  {{ vehicleMap[reservation.vehicle_id] || 'Loading...' }}
+                </router-link>
+              </td>
+              <td class="py-3 px-4">
+                {{ userMap[reservation.client_id] || 'Loading...' }}
+              </td>
+              <td class="py-3 px-4">{{ reservation.start_date }}</td>
+              <td class="py-3 px-4">{{ reservation.end_date }}</td>
+              <td class="py-3 px-4">
+                <span v-if="reservation.status === 'PAID'" class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">Paid</span>
+                <span v-else-if="reservation.status === 'MANUAL'" class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">Manual</span>
+                <span v-else-if="reservation.status === 'PENDING'" class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-semibold">Pending</span>
+                <span v-else class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-semibold">Unknown</span>
+              </td>
+              <td class="py-3 px-4">
+                <div class="flex space-x-2">
+                  <button
                       @click="editReservation(reservation)"
                       class="text-blue-600 hover:text-blue-800 transition transform hover:scale-110"
                       title="Edit"
-                    >
-                        <svg data-v-8ab86a7c="" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path data-v-8ab86a7c="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
-                    </button>
-                    <button
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                  <button
                       @click="deleteReservation(reservation.id)"
                       class="text-red-600 hover:text-red-800 transition transform hover:scale-110"
                       title="Delete"
-                    >
-                    <svg data-v-8ab86a7c="" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path data-v-8ab86a7c="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path><
-                    /svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr v-if="filteredReservations.length === 0">
-                <td colspan="6" class="py-6 text-center text-gray-500">
-                  No reservations found
-                </td>
-              </tr>
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                  <!-- Stripe płatność tylko dla PENDING -->
+                  <button
+                      v-if="reservation.status === 'PENDING'"
+                      @click="payWithStripe(reservation)"
+                      class="text-indigo-600 hover:text-indigo-800 transition transform hover:scale-110"
+                      title="Pay with Stripe"
+                  >Pay</button>
+                  <!-- Manualne oznaczanie (dla admina) -->
+                  <button
+                      v-if="reservation.status === 'PENDING'"
+                      @click="markManualPaid(reservation.id)"
+                      class="text-gray-600 hover:text-gray-800 transition transform hover:scale-110"
+                      title="Mark as Paid"
+                  >Manual</button>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="filteredReservations.length === 0">
+              <td colspan="7" class="py-6 text-center text-gray-500">
+                No reservations found
+              </td>
+            </tr>
             </tbody>
           </table>
         </div>
@@ -102,8 +123,8 @@
 
   <!-- Modal / Form -->
   <div
-    v-if="showAddReservationForm || editedReservation"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      v-if="showAddReservationForm || editedReservation"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
     <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
       <div class="p-6">
@@ -137,15 +158,15 @@
           </div>
           <div class="flex justify-between items-center mt-6">
             <button
-              type="button"
-              @click="cancelForm"
-              class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                type="button"
+                @click="cancelForm"
+                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </button>
             <button
-              type="submit"
-              class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                type="submit"
+                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
             >
               Save
             </button>
@@ -156,9 +177,9 @@
   </div>
 </template>
 
-
 <script>
 import ReservationService from '../services/ReservationService';
+import PaymentService from '../services/PaymentService';
 import axios from 'axios';
 
 export default {
@@ -177,8 +198,8 @@ export default {
       searchQuery: '',
       sortField: 'id',
       sortDirection: 'asc',
-
-      // NEW:
+      loading: false,
+      error: null,
       vehicleMap: {},
       userMap: {},
     };
@@ -188,20 +209,20 @@ export default {
     filteredReservations() {
       const query = this.searchQuery.toLowerCase();
       return this.reservations
-        .filter(r =>
-          (this.vehicleMap[r.vehicle_id]?.toLowerCase().includes(query)) ||
-          (this.userMap[r.client_id]?.toLowerCase().includes(query)) ||
-          (r.start_date && r.start_date.toLowerCase().includes(query)) ||
-          (r.end_date && r.end_date.toLowerCase().includes(query))
-        )
-        .sort((a, b) => {
-          const fieldA = a[this.sortField];
-          const fieldB = b[this.sortField];
-          if (fieldA == null || fieldB == null) return 0;
-          return this.sortDirection === 'asc'
-            ? String(fieldA).localeCompare(String(fieldB))
-            : String(fieldB).localeCompare(String(fieldA));
-        });
+          .filter(r =>
+              (this.vehicleMap[r.vehicle_id]?.toLowerCase().includes(query)) ||
+              (this.userMap[r.client_id]?.toLowerCase().includes(query)) ||
+              (r.start_date && r.start_date.toLowerCase().includes(query)) ||
+              (r.end_date && r.end_date.toLowerCase().includes(query))
+          )
+          .sort((a, b) => {
+            const fieldA = a[this.sortField];
+            const fieldB = b[this.sortField];
+            if (fieldA == null || fieldB == null) return 0;
+            return this.sortDirection === 'asc'
+                ? String(fieldA).localeCompare(String(fieldB))
+                : String(fieldB).localeCompare(String(fieldA));
+          });
     }
   },
 
@@ -213,11 +234,16 @@ export default {
 
   methods: {
     async fetchReservations() {
+      this.loading = true;
+      this.error = null;
       try {
         const response = await ReservationService.getAllReservations();
         this.reservations = response.data;
       } catch (error) {
+        this.error = 'Error fetching reservations.';
         console.error('Error fetching reservations:', error);
+      } finally {
+        this.loading = false;
       }
     },
 
@@ -266,8 +292,8 @@ export default {
       try {
         if (this.editedReservation) {
           await ReservationService.updateReservation(
-            this.editedReservation.id,
-            this.reservationForm
+              this.editedReservation.id,
+              this.reservationForm
           );
         } else {
           await ReservationService.createReservation(this.reservationForm);
@@ -302,6 +328,32 @@ export default {
         this.sortDirection = 'asc';
       }
     },
+
+    // STRIPE & MANUAL
+    async payWithStripe(reservation) {
+      try {
+        const amount = reservation.cost || 0;
+        const carName = this.vehicleMap[reservation.vehicle_id] || '';
+        const response = await PaymentService.createCheckoutSession({
+          reservationId: reservation.id,
+          amount,
+          carName
+        });
+        window.location.href = response.data.url; // przekieruj do Stripe
+      } catch (err) {
+        alert('Stripe payment failed: ' + (err.response?.data?.error || err.message));
+      }
+    },
+    async markManualPaid(reservationId) {
+      if (confirm('Czy na pewno oznaczyć tę rezerwację jako opłaconą ręcznie?')) {
+        try {
+          await ReservationService.markAsManualPaid(reservationId);
+          this.fetchReservations();
+        } catch (err) {
+          alert('Błąd oznaczania jako opłacone: ' + (err.response?.data?.error || err.message));
+        }
+      }
+    }
   }
 };
 </script>

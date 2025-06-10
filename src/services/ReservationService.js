@@ -47,4 +47,13 @@ export default {
     deleteReservation(id) {
         return axios.delete(`${API_URL}/${id}`);
     },
+
+    /**
+     * Mark reservation as manually paid
+     * @param {number} id Reservation ID
+     * @returns {Promise} Promise with operation status
+     */
+    markAsManualPaid(id) {
+        return axios.put(`${API_URL}/${id}/pay-manual`);
+    }
 };

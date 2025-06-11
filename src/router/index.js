@@ -15,6 +15,7 @@ import PaymentCancelView from '../views/PaymentCancelView.vue';
 import ManageUsersView from '../views/ManageUsersView.vue';
 import ReservationsView from '../views/ReservationsView.vue';
 import RegistrationView from "../views/RegistrationView.vue";
+import ProfileView from "../views/ProfileView.vue";
 
 
 const router = createRouter({
@@ -40,6 +41,11 @@ const router = createRouter({
             name: 'client',
             component: ClientView,
             meta: { requiresAuth: true },
+        },
+        {
+            path: '/profile',
+            name: 'profile',
+            component: ProfileView,
         },
         {
             path: '/payment/success',

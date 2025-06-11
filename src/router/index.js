@@ -14,6 +14,7 @@ import PaymentSuccessView from '../views/PaymentSuccessView.vue';
 import PaymentCancelView from '../views/PaymentCancelView.vue';
 import ManageUsersView from '../views/ManageUsersView.vue';
 import ReservationsView from '../views/ReservationsView.vue';
+import RegistrationView from "../views/RegistrationView.vue";
 
 
 const router = createRouter({
@@ -89,6 +90,11 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: LoginView,
+        },
+        {
+            path: '/register',
+            name: 'register',
+            component: RegistrationView,
         },
         {
             path: '/unauthorized',

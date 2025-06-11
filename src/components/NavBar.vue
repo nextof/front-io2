@@ -221,6 +221,13 @@ const getUserAvatarColor = () => {
                         >
                             Login
                         </RouterLink>
+                        <RouterLink
+                            v-if="!isLoggedIn"
+                            to="/register"
+                            class="bg-red-500 text-white rounded-md ml-2 px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow hover:bg-red-600"
+                        >
+                          Sign up
+                        </RouterLink>
                     </div>
                 </div>
 
@@ -368,6 +375,14 @@ const getUserAvatarColor = () => {
                     class="block w-full text-center text-white bg-green-600 hover:bg-green-700 rounded-md px-3 py-2 text-base font-medium transition-colors mt-3"
                 >
                     Login
+                </RouterLink>
+                <RouterLink
+                    v-if="!isLoggedIn"
+                    to="/register"
+                    @click="toggleMenu"
+                    class="block w-full text-center text-white ml-2 bg-red-600 hover:bg-red-700 rounded-md px-3 py-2 text-base font-medium transition-colors mt-3"
+                >
+                  Sign up
                 </RouterLink>
             </div>
         </div>

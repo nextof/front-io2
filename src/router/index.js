@@ -14,9 +14,8 @@ import PaymentSuccessView from '../views/PaymentSuccessView.vue';
 import PaymentCancelView from '../views/PaymentCancelView.vue';
 import ManageUsersView from '../views/ManageUsersView.vue';
 import ReservationsView from '../views/ReservationsView.vue';
-import RegistrationView from "../views/RegistrationView.vue";
-import ProfileView from "../views/ProfileView.vue";
-
+import RegistrationView from '../views/RegistrationView.vue';
+import ProfileView from '../views/ProfileView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,7 +67,17 @@ const router = createRouter({
             children: [
                 {
                     path: '',
-                    redirect: { name: 'staff-vehicles' },
+                    beforeEnter: (to, from, next) => {
+                        const roles = getCurrentUser.value.roles;
+
+                        if (roles?.includes('ROLE_ADMIN')) {
+                            next({ name: 'staff-users' });
+                        } else if (roles?.includes('ROLE_MODERATOR')) {
+                            next({ name: 'staff-vehicles' });
+                        } else {
+                            next({ name: 'staff-maintenance' });
+                        }
+                    },
                 },
                 {
                     path: 'vehicles',
@@ -133,8 +142,8 @@ router.beforeEach(async (to, from, next) => {
             if (
                 user.roles &&
                 (user.roles.includes('ROLE_ADMIN') ||
-                    user.roles.includes('ROLE_EMPLOYEE') ||
-                    user.roles.includes('ROLE_SERVICE'))
+                    user.roles.includes('ROLE_MODERATOR') ||
+                    user.roles.includes('ROLE_MECHANIC'))
             ) {
                 next();
             } else {

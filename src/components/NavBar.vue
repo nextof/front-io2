@@ -72,7 +72,7 @@ const isStaffMember = () => {
             role =>
                 role === 'ROLE_ADMIN' ||
                 role === 'ROLE_MODERATOR' ||
-                role === 'ROLE_SERVICE'
+                role === 'ROLE_MECHANIC'
         ) || false
     );
 };
@@ -226,7 +226,7 @@ const getUserAvatarColor = () => {
                             to="/register"
                             class="bg-red-500 text-white rounded-md ml-2 px-4 py-2 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow hover:bg-red-600"
                         >
-                          Sign up
+                            Sign up
                         </RouterLink>
                     </div>
                 </div>
@@ -382,7 +382,7 @@ const getUserAvatarColor = () => {
                     @click="toggleMenu"
                     class="block w-full text-center text-white ml-2 bg-red-600 hover:bg-red-700 rounded-md px-3 py-2 text-base font-medium transition-colors mt-3"
                 >
-                  Sign up
+                    Sign up
                 </RouterLink>
             </div>
         </div>

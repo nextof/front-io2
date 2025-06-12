@@ -23,17 +23,18 @@
                             </h2>
                             <nav class="space-y-2">
                                 <RouterLink
+                                    v-if="isAdmin || isWorker"
                                     to="/staff/vehicles"
                                     class="block px-4 py-2 rounded-md hover:bg-blue-50 text-blue-600 font-medium"
                                     :class="{
                                         'bg-blue-50':
                                             currentRoute === '/staff/vehicles',
                                     }"
-                                    @click="hidePlaceholder"
                                 >
                                     Manage Vehicles
                                 </RouterLink>
                                 <RouterLink
+                                    v-if="isAdmin || isMechanic"
                                     to="/staff/maintenance-tasks"
                                     class="block px-4 py-2 rounded-md hover:bg-blue-50 text-blue-600 font-medium"
                                     :class="{
@@ -41,11 +42,11 @@
                                             currentRoute ===
                                             '/staff/maintenance-tasks',
                                     }"
-                                    @click="hidePlaceholder"
                                 >
                                     Maintenance Tasks
                                 </RouterLink>
                                 <RouterLink
+                                    v-if="isAdmin"
                                     to="/staff/reservations"
                                     class="block px-4 py-2 rounded-md hover:bg-blue-50 text-blue-600 font-medium"
                                     :class="{
@@ -53,18 +54,17 @@
                                             currentRoute ===
                                             '/staff/reservations',
                                     }"
-                                    @click="hidePlaceholder"
                                 >
                                     Reservations
                                 </RouterLink>
                                 <RouterLink
+                                    v-if="isAdmin"
                                     to="/staff/users"
                                     class="block px-4 py-2 rounded-md hover:bg-blue-50 text-blue-600 font-medium"
                                     :class="{
                                         'bg-blue-50':
                                             currentRoute === '/staff/users',
                                     }"
-                                    @click="hidePlaceholder"
                                 >
                                     Manage Users
                                 </RouterLink>
@@ -75,70 +75,7 @@
 
                 <!-- Main Content -->
                 <div class="md:col-span-3">
-                    <router-view v-if="!showingPlaceholder"></router-view>
-
-                    <!-- Placeholder for features not yet implemented -->
-                    <div
-                        v-if="showingPlaceholder"
-                        class="bg-white rounded-lg shadow-md overflow-hidden"
-                    >
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-6">
-                                <h2 class="text-2xl font-bold text-gray-800">
-                                    {{ placeholderTitle }}
-                                </h2>
-                                <!-- Back button to return to vehicles view -->
-                                <button
-                                    @click="goToVehicles"
-                                    class="px-4 py-2 text-blue-600 hover:text-blue-800 flex items-center"
-                                >
-                                    <svg
-                                        class="w-5 h-5 mr-1"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                                        ></path>
-                                    </svg>
-                                    Back to Vehicles
-                                </button>
-                            </div>
-
-                            <div
-                                class="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300"
-                            >
-                                <svg
-                                    class="w-16 h-16 text-gray-400 mx-auto mb-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                                    ></path>
-                                </svg>
-                                <h3
-                                    class="text-lg font-medium text-gray-700 mb-2"
-                                >
-                                    Coming Soon
-                                </h3>
-                                <p class="text-gray-500 max-w-md mx-auto">
-                                    This feature is currently in development and
-                                    will be available soon.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    <router-view></router-view>
                 </div>
             </div>
         </div>
@@ -181,23 +118,14 @@ export default {
         const isAdmin = computed(() => {
             return user.value.roles?.includes('ROLE_ADMIN') || false;
         });
-
-        // Show placeholder for unimplemented features
-        const showPlaceholder = title => {
-            placeholderTitle.value = title;
-            showingPlaceholder.value = true;
-        };
-
-        // Hide placeholder and show router view
-        const hidePlaceholder = () => {
-            showingPlaceholder.value = false;
-        };
-
-        // Go back to vehicles view
-        const goToVehicles = () => {
-            showingPlaceholder.value = false;
-            router.push('/staff/vehicles');
-        };
+        // Check if user is a worker
+        const isWorker = computed(() => {
+            return user.value.roles?.includes('ROLE_MODERATOR') || false;
+        });
+        // Check if user is a mechanic
+        const isMechanic = computed(() => {
+            return user.value.roles?.includes('ROLE_MECHANIC') || false;
+        });
 
         // Load user data when component is mounted
         const loadUser = async () => {
@@ -212,12 +140,11 @@ export default {
         return {
             user,
             isAdmin,
+            isWorker,
+            isMechanic,
             currentRoute,
             showingPlaceholder,
             placeholderTitle,
-            showPlaceholder,
-            hidePlaceholder,
-            goToVehicles,
         };
     },
 };

@@ -1019,7 +1019,8 @@ export default {
                         end_date: null,
                         start_date: new Date().toISOString().split('T')[0],
                         status: 'planned',
-                        vehicle: vehicleData,
+                        vehicleId: vehicleData.id,
+                        licensePlate: vehicleData.license_plate,
                         done: false,
                     };
                     await VehicleService.createMaintenanceTask(maintenanceData);

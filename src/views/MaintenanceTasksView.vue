@@ -286,10 +286,10 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <RouterLink
-                                        :to="`/vehicles/${task.vehicle.id}`"
+                                        :to="`/vehicles/${task.vehicleId}`"
                                         class="text-blue-600 hover:text-blue-800 hover:underline"
                                     >
-                                        {{ task.vehicle.license_plate }}
+                                        {{ task.licensePlate }}
                                     </RouterLink>
                                 </td>
                                 <td class="py-3 px-5">
@@ -505,7 +505,8 @@ export default {
             description: '',
             start_date: null,
             end_date: null,
-            vehicle: null,
+            vehicleId: null,
+            licensePlate: null,
             done: false,
         });
 
@@ -537,9 +538,7 @@ export default {
                     return (
                         task.start_date?.includes(query) ||
                         task.end_date?.includes(query) ||
-                        task.vehicle.license_plate
-                            ?.toLowerCase()
-                            .includes(query) ||
+                        task.licensePlate?.toLowerCase().includes(query) ||
                         String(task.cost)?.includes(query)
                     );
                 });
@@ -599,7 +598,8 @@ export default {
                     description: task.description,
                     end_date: task.end_date,
                     start_date: task.start_date,
-                    vehicle: task.vehicle,
+                    vehicleId: task.vehicleId,
+                    licensePlate: task.licensePlate,
                     done: task.done,
                 })
             );
@@ -615,7 +615,7 @@ export default {
         // Set task to done
         const setTaskToDone = async task => {
             const updatedTask = { ...task, done: true };
-            const updatedVehicle = { ...task.vehicle, status: 'Available' };
+            // const updatedVehicle = { ...task.vehicle, status: 'Available' };
 
             try {
                 await VehicleService.updateMaintenanceTask(
@@ -623,12 +623,12 @@ export default {
                     updatedTask
                 );
 
-                await VehicleService.updateVehicle(
-                    updatedVehicle.id,
-                    updatedVehicle
-                );
+                // await VehicleService.updateVehicle(
+                //     updatedVehicle.id,
+                //     updatedVehicle
+                // );
 
-                alert('Task marked as done, vehicle is available again!');
+                // alert('Task marked as done, vehicle is available again!');
                 await fetchMaintenanceTasks();
             } catch (err) {
                 console.error('Failed to mark task as done:', err);

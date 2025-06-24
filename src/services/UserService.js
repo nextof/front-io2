@@ -35,10 +35,10 @@ export async function authorizeGoogleLogin(googleResponse) {
                 config.tokenStorageKey,
                 JSON.stringify(response.data)
             );
-
             // Log the user data that is being stored
             console.log('User data stored in localStorage:', response.data);
-        }
+        } else if (!response.data.exists) return response.data;
+
         return response.data;
     } catch (error) {
         console.error('Google login error:', error);
@@ -66,6 +66,58 @@ export async function loginUser(credentials) {
     } catch (error) {
         console.error('Login error:', error);
         throw error;
+    }
+}
+
+export async function registerUser(payload) {
+    try {
+        const response = await axios.post('/api/auth/signup', {
+            username: payload.username,
+            email: payload.email,
+            password: payload.password,
+        });
+
+        if (response.status === 200) {
+            return response;
+        }
+
+        throw new Error('Unexpected response status: ' + response.status);
+    } catch (error) {
+        let errorValue = '';
+
+        const msg =
+            error.response?.data?.message ||
+            error.response?.data ||
+            error.message ||
+            'Unknown error occurred';
+        console.log(msg);
+        if (msg.includes('Username is already taken')) {
+            errorValue = 'This username is already taken.';
+        } else if (msg.includes('Email is already in use')) {
+            errorValue = 'This email is already in use.';
+        } else if (msg.toLowerCase().includes('password')) {
+            errorValue = msg;
+        } else if (
+            msg.includes('must be between 6 and 40') ||
+            msg.includes('wielkość musi należeć do zakresu') ||
+            msg.includes('password')
+        ) {
+            errorValue = 'Password must be 6-40 characters.';
+        } else if (
+            msg.includes('must be between 3 and 20') ||
+            msg.includes('username')
+        ) {
+            errorValue = 'Username must be 3-20 characters.';
+        } else if (
+            msg.toLowerCase().includes('email') &&
+            msg.toLowerCase().includes('invalid')
+        ) {
+            errorValue = 'Email format is invalid.';
+        } else {
+            errorValue = msg || 'Registration failed. Try again.';
+        }
+
+        return errorValue;
     }
 }
 

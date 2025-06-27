@@ -2,7 +2,6 @@ import axios from 'axios';
 import config from '../config';
 import { jwtDecode } from 'jwt-decode';
 
-
 // Add an axios interceptor to add the JWT token to all requests
 axios.interceptors.request.use(
     axiosConfig => {
@@ -31,17 +30,21 @@ export async function authorizeGoogleLogin(googleResponse) {
             config.apiUrl + config.authEndpoints.google,
             googleResponse
         );
-        if (response.data.accessToken) {
-            // Store user details and JWT token in localStorage
-            localStorage.setItem(
-                config.tokenStorageKey,
-                JSON.stringify(response.data)
-            );
-            // Log the user data that is being stored
-            console.log('User data stored in localStorage:', response.data);
-        } else if (!response.data.exists) return response.data;
 
-        return response.data;
+        if (response.data.exists == false) return response.data;
+        else {
+            const token = response.data;
+            const decoded = jwtDecode(token);
+            const user = {
+                accessToken: token,
+                username: decoded.sub,
+                id: decoded.id,
+                email: decoded.email,
+                roles: decoded.roles,
+            };
+            localStorage.setItem(config.tokenStorageKey, JSON.stringify(user));
+            return user;
+        }
     } catch (error) {
         console.error('Google login error:', error);
         throw error;
@@ -66,10 +69,7 @@ export async function loginUser(credentials) {
             roles: decoded.roles,
         };
 
-        localStorage.setItem(
-            config.tokenStorageKey,
-            JSON.stringify(user)
-        );
+        localStorage.setItem(config.tokenStorageKey, JSON.stringify(user));
 
         return user;
     } catch (error) {

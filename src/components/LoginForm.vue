@@ -158,7 +158,7 @@ export default {
 
         async handleGoogleLogin(googleResponse) {
             const userData = await authorizeGoogleLogin(googleResponse);
-
+            console.log(userData);
             if (userData.accessToken) this.changeToMainViewAfterLogin(userData);
             else if (!userData.exists) {
                 this.isSetPasswordVisible = true;

@@ -1,5 +1,7 @@
 import axios from 'axios';
 import config from '../config';
+import { jwtDecode } from 'jwt-decode';
+
 
 // Add an axios interceptor to add the JWT token to all requests
 axios.interceptors.request.use(
@@ -52,17 +54,24 @@ export async function loginUser(credentials) {
             config.apiUrl + config.authEndpoints.login,
             credentials
         );
-        if (response.data.accessToken) {
-            // Store user details and JWT token in localStorage
-            localStorage.setItem(
-                config.tokenStorageKey,
-                JSON.stringify(response.data)
-            );
 
-            // Log the user data that is being stored
-            console.log('User data stored in localStorage:', response.data);
-        }
-        return response.data;
+        const token = response.data.accessToken;
+        const decoded = jwtDecode(token);
+
+        const user = {
+            accessToken: token,
+            username: decoded.sub,
+            id: decoded.id,
+            email: decoded.email,
+            roles: decoded.roles,
+        };
+
+        localStorage.setItem(
+            config.tokenStorageKey,
+            JSON.stringify(user)
+        );
+
+        return user;
     } catch (error) {
         console.error('Login error:', error);
         throw error;
@@ -121,18 +130,13 @@ export async function registerUser(payload) {
     }
 }
 
-export async function getCurrentUser() {
-    // This checks if there's a logged in user in local storage
+export function getCurrentUser() {
     const userStr = localStorage.getItem(config.tokenStorageKey);
     if (!userStr) return null;
 
     try {
         const user = JSON.parse(userStr);
-        if (user && user.accessToken) {
-            return user;
-        } else {
-            return null;
-        }
+        return user && user.accessToken ? user : null;
     } catch (e) {
         console.error('Error parsing user from localStorage:', e);
         return null;

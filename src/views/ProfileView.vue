@@ -131,11 +131,11 @@
                             <td class="py-2 px-3">{{ reservation.id }}</td>
                             <td class="py-2 px-3">
                                 <router-link
-                                    :to="`/vehicles/${reservation.licensePlate}`"
+                                    :to="`/vehicles/${reservation.id}`"
                                     class="text-blue-600 hover:underline"
                                 >
                                     {{
-                                        vehicleMap[reservation.licensePlate] ||
+                                        vehicleMap[reservation.id] ||
                                         'Loading...'
                                     }}
                                 </router-link>
